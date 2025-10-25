@@ -1,4 +1,23 @@
-requests
-pdf2image
-Pillow
-pytesseract
+requests==2.31.0
+pdf2image==1.17.0
+Pillow==10.3.0
+
+# Traditional OCR Engines (Apache 2.0 License)
+pytesseract==0.3.10         # Tesseract OCR
+paddleocr==2.7.3            # PaddleOCR
+paddlepaddle==2.6.1         # PaddleOCR backend (CPU version)
+easyocr==1.7.1              # EasyOCR
+
+# DeepSeek-OCR Dependencies (MIT License)
+# NOTE: DeepSeek-OCR requires GPU with ≥16GB VRAM
+# Install PyTorch with CUDA separately (see setup.sh):
+#   pip install torch==2.6.0 torchvision==0.21.0 --index-url https://download.pytorch.org/whl/cu118
+transformers==4.46.3        # Hugging Face Transformers
+tokenizers==0.20.3          # Fast tokenizers
+einops>=0.7.0               # Tensor operations
+addict>=2.4.0               # Dict utilities
+easydict>=1.10              # Dict utilities
+
+# Optional: Flash Attention for DeepSeek-OCR (requires compilation)
+# Install separately: pip install flash-attn==2.7.3 --no-build-isolation
+# flash-attn==2.7.3
