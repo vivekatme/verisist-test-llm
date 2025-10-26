@@ -1,0 +1,164 @@
+{
+  "templateId": "SEROLOGY_DENGUE_PROFILE_v1.0",
+  "testType": "DENGUE_PROFILE",
+  "displayName": "Dengue Profile (IgG & IgM Antibody & NS1 Antigen)",
+  "department": "SEROLOGY",
+  "version": "1.0",
+  "standardSource": "WHO/ICMR",
+  "lastUpdated": "2024-10-26",
+
+  "metadata": {
+    "specimenType": "SERUM",
+    "commonAliases": ["Dengue Test", "Dengue Screening", "Dengue NS1/IgG/IgM", "DENGUE PROFILE"],
+    "typicalTurnaroundTime": "3-6 hours",
+    "fasting": false,
+    "testingWindow": {
+      "NS1": "Day 1-7 of fever",
+      "IgM": "Day 4-90 of fever",
+      "IgG": "After day 14 (indicates past infection or secondary infection)"
+    }
+  },
+
+  "sections": [
+    {
+      "sectionId": "DENGUE_ANTIGENS",
+      "sectionName": "Dengue Antigens",
+      "parameters": [
+        {
+          "parameterId": "DENGUE_NS1_ANTIGEN",
+          "displayName": "Dengue NS1 Antigen",
+          "aliases": ["NS1", "NS1 Antigen", "Dengue NS1", "DENGUE NS1 ANTIGEN"],
+          "required": true,
+          "unit": "INDEX",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {
+              "negative": {"max": 1.0},
+              "positive": {"min": 1.0}
+            }
+          },
+          "interpretation": {
+            "negative": "< 1.0 INDEX",
+            "positive": ">= 1.0 INDEX"
+          },
+          "methodology": "ELISA with Fluorescent Detection",
+          "clinicalSignificance": "Early marker of dengue infection (Day 1-7)"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "DENGUE_ANTIBODIES",
+      "sectionName": "Dengue Antibodies",
+      "parameters": [
+        {
+          "parameterId": "DENGUE_IGG_ANTIBODIES",
+          "displayName": "Dengue IgG Antibodies",
+          "aliases": ["IgG", "Dengue IgG", "IgG Antibody", "DENGUE IgG ANTIBODIES"],
+          "required": true,
+          "unit": "INDEX",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {
+              "negative": {"max": 1.0},
+              "positive": {"min": 1.0}
+            }
+          },
+          "interpretation": {
+            "negative": "< 1.0 INDEX",
+            "positive": ">= 1.0 INDEX"
+          },
+          "methodology": "ELISA with Fluorescent Detection",
+          "clinicalSignificance": "Indicates past infection or secondary dengue infection"
+        },
+        {
+          "parameterId": "DENGUE_IGM_ANTIBODIES",
+          "displayName": "Dengue IgM Antibodies",
+          "aliases": ["IgM", "Dengue IgM", "IgM Antibody", "DENGUE IgM ANTIBODIES"],
+          "required": true,
+          "unit": "INDEX",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {
+              "negative": {"max": 1.0},
+              "positive": {"min": 1.0}
+            }
+          },
+          "interpretation": {
+            "negative": "< 1.0 INDEX",
+            "positive": ">= 1.0 INDEX"
+          },
+          "methodology": "ELISA with Fluorescent Detection",
+          "clinicalSignificance": "Indicates recent/current dengue infection (appears Day 4-5)"
+        }
+      ]
+    }
+  ],
+
+  "clinicalInterpretation": {
+    "acute_primary_dengue": {
+      "condition": "NS1 positive AND IgM positive AND IgG negative",
+      "interpretation": "Acute primary dengue infection"
+    },
+    "acute_secondary_dengue": {
+      "condition": "NS1 positive AND IgM positive AND IgG positive",
+      "interpretation": "Acute secondary dengue infection (higher risk of severe dengue)"
+    },
+    "recent_infection": {
+      "condition": "NS1 negative AND IgM positive AND IgG negative/positive",
+      "interpretation": "Recent dengue infection (after Day 7)"
+    },
+    "past_infection": {
+      "condition": "NS1 negative AND IgM negative AND IgG positive",
+      "interpretation": "Past dengue infection (immunity present)"
+    },
+    "no_infection": {
+      "condition": "NS1 negative AND IgM negative AND IgG negative",
+      "interpretation": "No current or past dengue infection detected"
+    }
+  },
+
+  "crossReactivity": {
+    "false_positive_NS1": [
+      "Murray Valley encephalitis",
+      "Japanese encephalitis",
+      "Yellow fever",
+      "West Nile virus"
+    ],
+    "false_positive_antibodies": [
+      "Epstein-Barr virus",
+      "Rheumatoid Arthritis",
+      "Leptospira",
+      "Malaria",
+      "Hepatitis-A",
+      "Influenza A & B",
+      "S. typhi",
+      "Japanese encephalitis",
+      "West Nile virus"
+    ]
+  },
+
+  "limitations": [
+    "This is only a screening test",
+    "All reactive samples should be confirmed by confirmatory test",
+    "Results should be interpreted with clinical history and symptomatology",
+    "Immunosuppressive treatments may induce negative IgG or IgM results",
+    "Timing of sample collection affects test sensitivity"
+  ],
+
+  "recommendations": {
+    "positive_result": [
+      "Clinical correlation required",
+      "Monitor for warning signs of severe dengue",
+      "Confirmatory testing recommended",
+      "Complete blood count to check platelet levels"
+    ],
+    "negative_result": [
+      "If symptoms persist, repeat testing after 2-3 days",
+      "Consider alternative diagnoses"
+    ]
+  }
+}

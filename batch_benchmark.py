@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 """
-Batch benchmark script - Process multiple documents and generate consolidated results.
+Batch Template-Based Benchmark
+
+Processes multiple documents using template-based extraction with:
+- PaddleOCR for text extraction
+- 2 LLM models (Qwen 2.5 7B, Mistral 7B)
+- 2 modes per model (extraction-only, validation+extraction)
+- Total: 4 combinations per document (2 models × 2 modes)
 """
 
 import os
@@ -27,15 +33,15 @@ def find_pdf_files(directory: str) -> list:
 
 
 def run_benchmark_for_file(file_path: str, output_dir: str) -> dict:
-    """Run comprehensive benchmark for a single file"""
+    """Run template-based V2 benchmark for a single file"""
     print(f"\n{'=' * 80}")
     print(f"Processing: {Path(file_path).name}")
     print('=' * 80)
 
     try:
-        # Run comprehensive benchmark using the same Python interpreter
+        # Run multi-model V2 benchmark using the same Python interpreter
         result = subprocess.run(
-            [sys.executable, "comprehensive_benchmark.py", file_path],
+            [sys.executable, "multi_model_v2_benchmark.py", file_path],
             capture_output=True,
             text=True,
             timeout=1800  # 30 minutes max
@@ -51,9 +57,9 @@ def run_benchmark_for_file(file_path: str, output_dir: str) -> dict:
                 "timestamp": datetime.now().isoformat()
             }
 
-        # Find the generated results file (most recent comprehensive_results_*.json)
+        # Find the generated results file (most recent multi_model_v2_*.json)
         # Results are now saved in results/ directory
-        results_files = sorted(Path("results").glob("comprehensive_results_*.json"),
+        results_files = sorted(Path("results").glob("multi_model_v2_*.json"),
                               key=os.path.getmtime, reverse=True)
 
         if not results_files:
@@ -134,8 +140,13 @@ def main():
         return
 
     print("\n" + "=" * 80)
-    print("  BATCH BENCHMARK: Multiple Documents")
+    print("  BATCH TEMPLATE-BASED BENCHMARK")
     print("=" * 80)
+    print(f"\n🔧 Configuration:")
+    print(f"   OCR: PaddleOCR (table-aware)")
+    print(f"   Models: 2 (Qwen 2.5 7B, Mistral 7B)")
+    print(f"   Modes: 2 (extraction-only, validation+extraction)")
+    print(f"   Total combinations: 4 per document")
     print(f"\n📁 Input Directory: {input_dir}")
     print(f"📄 Files Found: {len(files)}")
     for i, f in enumerate(files, 1):

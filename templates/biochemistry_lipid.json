@@ -1,0 +1,247 @@
+{
+  "templateId": "BIOCHEMISTRY_LIPID_PROFILE_v1.0",
+  "testType": "LIPID_PROFILE",
+  "displayName": "Lipid Profile",
+  "department": "BIOCHEMISTRY",
+  "version": "1.0",
+  "standardSource": "NCEP ATP III Guidelines",
+  "lastUpdated": "2024-10-26",
+
+  "metadata": {
+    "specimenType": "SERUM",
+    "commonAliases": ["Lipid Panel", "Cholesterol Profile", "Lipid Test", "LIPID PROFILE"],
+    "typicalTurnaroundTime": "2-4 hours",
+    "fasting": true,
+    "fastingDuration": "12-14 hours"
+  },
+
+  "sections": [
+    {
+      "sectionId": "CHOLESTEROL",
+      "sectionName": "Cholesterol Parameters",
+      "parameters": [
+        {
+          "parameterId": "TOTAL_CHOLESTEROL",
+          "displayName": "Total Cholesterol",
+          "aliases": ["Total Cholesterol", "Cholesterol", "TC", "TOTAL CHOLESTEROL"],
+          "required": true,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {
+              "desirable": {"max": 200},
+              "borderline": {"min": 200, "max": 239},
+              "high": {"min": 240}
+            }
+          },
+          "interpretation": {
+            "desirable": "< 200 mg/dL",
+            "borderline_high": "200-239 mg/dL",
+            "high": ">= 240 mg/dL"
+          },
+          "methodology": "Enzymatic Colorimetric"
+        },
+        {
+          "parameterId": "HDL_CHOLESTEROL",
+          "displayName": "HDL Cholesterol",
+          "aliases": ["HDL", "Good Cholesterol", "High Density Lipoprotein", "HDL CHOLESTEROL"],
+          "required": true,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "male": {
+              "low": {"max": 40},
+              "normal": {"min": 40, "max": 60},
+              "optimal": {"min": 60}
+            },
+            "female": {
+              "low": {"max": 50},
+              "normal": {"min": 50, "max": 60},
+              "optimal": {"min": 60}
+            }
+          },
+          "interpretation": {
+            "low_risk": "< 40 mg/dL (male), < 50 mg/dL (female) - Major risk factor",
+            "normal": "40-60 mg/dL",
+            "protective": "> 60 mg/dL - Protective against heart disease"
+          },
+          "methodology": "Direct Enzymatic"
+        },
+        {
+          "parameterId": "LDL_CHOLESTEROL",
+          "displayName": "LDL Cholesterol",
+          "aliases": ["LDL", "Bad Cholesterol", "Low Density Lipoprotein", "LDL CHOLESTEROL"],
+          "required": true,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {
+              "optimal": {"max": 100},
+              "near_optimal": {"min": 100, "max": 129},
+              "borderline_high": {"min": 130, "max": 159},
+              "high": {"min": 160, "max": 189},
+              "very_high": {"min": 190}
+            }
+          },
+          "interpretation": {
+            "optimal": "< 100 mg/dL",
+            "near_optimal": "100-129 mg/dL",
+            "borderline_high": "130-159 mg/dL",
+            "high": "160-189 mg/dL",
+            "very_high": ">= 190 mg/dL"
+          },
+          "methodology": "Calculated (Friedewald Formula) or Direct",
+          "formula": "TOTAL_CHOLESTEROL - HDL_CHOLESTEROL - (TRIGLYCERIDES / 5)"
+        },
+        {
+          "parameterId": "VLDL_CHOLESTEROL",
+          "displayName": "VLDL Cholesterol",
+          "aliases": ["VLDL", "Very Low Density Lipoprotein", "VLDL CHOLESTEROL"],
+          "required": false,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 2, "max": 30}
+          },
+          "methodology": "Calculated",
+          "formula": "TRIGLYCERIDES / 5"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "TRIGLYCERIDES",
+      "sectionName": "Triglycerides",
+      "parameters": [
+        {
+          "parameterId": "TRIGLYCERIDES",
+          "displayName": "Triglycerides",
+          "aliases": ["TG", "Triglycerides", "Trigs", "TRIGLYCERIDES"],
+          "required": true,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {
+              "normal": {"max": 150},
+              "borderline_high": {"min": 150, "max": 199},
+              "high": {"min": 200, "max": 499},
+              "very_high": {"min": 500}
+            }
+          },
+          "interpretation": {
+            "normal": "< 150 mg/dL",
+            "borderline_high": "150-199 mg/dL",
+            "high": "200-499 mg/dL",
+            "very_high": ">= 500 mg/dL"
+          },
+          "methodology": "Enzymatic Colorimetric"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "RATIOS",
+      "sectionName": "Cardiovascular Risk Ratios",
+      "parameters": [
+        {
+          "parameterId": "TC_HDL_RATIO",
+          "displayName": "Total Cholesterol / HDL Ratio",
+          "aliases": ["TC/HDL", "Cholesterol Ratio", "Cardiac Risk Ratio", "TC/HDL RATIO"],
+          "required": false,
+          "unit": "",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {
+              "optimal": {"max": 3.5},
+              "acceptable": {"min": 3.5, "max": 5.0},
+              "high_risk": {"min": 5.0}
+            }
+          },
+          "interpretation": {
+            "optimal": "< 3.5 (Low risk)",
+            "acceptable": "3.5-5.0 (Average risk)",
+            "high_risk": "> 5.0 (High risk)"
+          },
+          "methodology": "Calculated",
+          "formula": "TOTAL_CHOLESTEROL / HDL_CHOLESTEROL"
+        },
+        {
+          "parameterId": "LDL_HDL_RATIO",
+          "displayName": "LDL / HDL Ratio",
+          "aliases": ["LDL/HDL", "Atherogenic Index", "LDL/HDL RATIO"],
+          "required": false,
+          "unit": "",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {
+              "optimal": {"max": 2.5},
+              "acceptable": {"min": 2.5, "max": 3.5},
+              "high_risk": {"min": 3.5}
+            }
+          },
+          "methodology": "Calculated",
+          "formula": "LDL_CHOLESTEROL / HDL_CHOLESTEROL"
+        },
+        {
+          "parameterId": "NON_HDL_CHOLESTEROL",
+          "displayName": "Non-HDL Cholesterol",
+          "aliases": ["Non-HDL", "Non HDL Cholesterol", "NON-HDL CHOLESTEROL"],
+          "required": false,
+          "unit": "mg/dL",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {
+              "optimal": {"max": 130},
+              "near_optimal": {"min": 130, "max": 159},
+              "borderline_high": {"min": 160, "max": 189},
+              "high": {"min": 190, "max": 219},
+              "very_high": {"min": 220}
+            }
+          },
+          "methodology": "Calculated",
+          "formula": "TOTAL_CHOLESTEROL - HDL_CHOLESTEROL"
+        }
+      ]
+    }
+  ],
+
+  "clinicalInterpretation": {
+    "dyslipidemia": {
+      "condition": "TOTAL_CHOLESTEROL > 240 OR LDL > 160 OR HDL < 40 OR TRIGLYCERIDES > 200",
+      "recommendation": "Lifestyle modification and consider pharmacotherapy"
+    },
+    "metabolic_syndrome": {
+      "condition": "TRIGLYCERIDES > 150 AND HDL < 40 (male) or < 50 (female)",
+      "recommendation": "Evaluate for metabolic syndrome"
+    },
+    "cardiovascular_risk": {
+      "high": "LDL >= 190 OR TC/HDL > 5.0",
+      "moderate": "LDL 130-189 OR TC/HDL 3.5-5.0",
+      "low": "LDL < 130 AND TC/HDL < 3.5"
+    }
+  },
+
+  "treatmentTargets": {
+    "high_risk_patients": {
+      "description": "Coronary heart disease, diabetes, or 10-year risk > 20%",
+      "LDL_target": "< 100 mg/dL (optional < 70 mg/dL)"
+    },
+    "moderate_risk": {
+      "description": "2+ risk factors, 10-year risk 10-20%",
+      "LDL_target": "< 130 mg/dL"
+    },
+    "low_risk": {
+      "description": "0-1 risk factors",
+      "LDL_target": "< 160 mg/dL"
+    }
+  },
+
+  "qualityNotes": [
+    "12-14 hour fasting required for accurate results",
+    "Recent illness may affect results",
+    "Medications (statins, fibrates) should be noted",
+    "LDL calculation invalid if triglycerides > 400 mg/dL"
+  ]
+}

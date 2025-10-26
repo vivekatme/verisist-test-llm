@@ -1,172 +1,141 @@
-# Models and Licenses for Benchmarking
+# Models and Configuration for Template-Based Extraction
 
-## OSS LLM Models (Download Commands)
+## Current Configuration
 
-### General Purpose Models (Apache 2.0 License)
+### LLM Models (2 Best-Performing 7B Models)
 ```bash
-# Qwen 2.5 Series - Apache 2.0
-ollama pull qwen2.5:3b      # 2.6GB - Fast
-ollama pull qwen2.5:7b      # 4.7GB - Balanced
+# Qwen 2.5 7B - Apache 2.0
+ollama pull qwen2.5:7b      # 4.7GB - Excellent accuracy, 100% completeness
 
-# Mistral AI Models - Apache 2.0
-ollama pull mistral:7b      # 4.1GB - Efficient, strong performance
+# Mistral 7B - Apache 2.0
+ollama pull mistral:7b      # 4.1GB - Excellent accuracy, 100% completeness
 ```
 
-### Alternative Models
-```bash
-# Llama 3.2 - Llama 3 Community License (some restrictions)
-ollama pull llama3.2:3b     # 2GB - Fast
+**Performance Results:**
+- **Qwen 2.5 7B**: 100% completeness, ~160s extraction time
+- **Mistral 7B**: 100% completeness, ~165s extraction time
 
-# Gemma 2 - Gemma Terms of Use (generally permissive)
-ollama pull gemma2:9b       # 5.4GB - Google model
-```
+### OCR Engine
 
-## OCR Engines
-
-### Supported OCR Engines (Apache 2.0 License)
-
-#### Tesseract OCR
-- Most mature, widely used
-- Good accuracy on printed documents
-- Fast, CPU-based (4-5 seconds/page)
-- No GPU required
-- 100+ languages supported
-- **Best for:** Speed priority, printed documents
-
-**Installation:**
-```bash
-# macOS
-brew install tesseract
-pip install pytesseract
-```
-
-#### EasyOCR
-- Deep learning based
-- Excellent accuracy on complex layouts
-- Slower but more accurate (60-90 seconds/page)
-- CPU-based (GPU optional but not required)
+#### PaddleOCR (Default and Recommended)
+- Deep learning based OCR with excellent table layout preservation
+- Handles medical report tables correctly (parameter-value pairing)
+- CPU-based, no GPU required
 - 80+ languages supported
-- **Best for:** Accuracy priority, complex layouts, handwriting
+- **Processing time:** ~30s for 3-page document at 300 DPI
+
+**Why PaddleOCR:**
+- Preserves table structure: parameters and values on adjacent lines
+- Critical for medical reports where data is in tabular format
+- Previous OCR engines (Tesseract) separated columns by 40+ lines, breaking extraction
 
 **Installation:**
 ```bash
-pip install easyocr
+pip install paddlepaddle paddleocr pdf2image
 ```
 
----
-
-### ❌ Removed OCR Engines
-
-#### PaddleOCR - REMOVED
-- **Reason:** Incompatible with Python 3.13
-  - v3.3.0: Persistent segmentation faults on macOS
-  - v2.7.3: Requires numpy < 2.0 (not compatible with Python 3.13)
-  - Docker solution: Too much overhead for production
-- **Alternative:** Use EasyOCR for complex layouts, Tesseract for speed
-
-#### Surya OCR - REMOVED
-- **Reason:** Persistent API instability
-  - v0.17.0+ has breaking API changes
-  - Initialization errors: `'function' object has no attribute 'config'`
-  - Multiple breaking changes between versions
-- **Alternative:** Use EasyOCR for multilingual support
-
-#### DeepSeek-OCR - REMOVED
-- **Reason:** Not practical for MacBook Air M4
-  - Requires GPU with ≥16GB VRAM
-  - Causes thermal throttling on Mac
-- **Alternative:** Use EasyOCR or Tesseract
+**Python 3.13 Compatibility:**
+- Created imghdr compatibility shim in `venv/lib/python3.13/site-packages/imghdr.py`
+- Successfully tested and working
 
 ---
 
-## Recommended Combinations
+## Removed Components
 
-### Speed Priority
-- **OCR:** Tesseract
-- **LLM:** qwen2.5:3b
-- **Expected:** ~25-35s/document on MacBook Air M4
+### Removed Models
+| Model | Reason |
+|-------|--------|
+| Qwen 2.5 3B | Only 10% completeness (insufficient for production) |
+| Meditron 7B | Outdated model, removed per user request |
+| BioMistral Q6_K | Model corruption - empty responses |
+| BioMistral Q4 | Model corruption - empty responses |
 
-### Accuracy Priority
-- **OCR:** Tesseract (for LLM benchmark) or EasyOCR (for OCR comparison)
-- **LLM:** Qwen 2.5 7B or Mistral 7B
-- **Expected:** ~50-60s/document on MacBook Air M4
-
-### Balanced
-- **OCR:** Tesseract
-- **LLM:** qwen2.5:7b
-- **Expected:** ~50-60s/document on MacBook Air M4
+### Removed OCR Engines
+| Engine | Reason |
+|--------|--------|
+| Tesseract OCR | Poor table layout handling - reads columns separately (40+ line gap between parameters and values) |
+| EasyOCR | Not tested, Tesseract already showed layout issues |
 
 ---
 
 ## Benchmark Matrix
 
-### LLM Benchmark (comprehensive_benchmark.py)
-Uses **Tesseract OCR** as baseline × **3 LLM models** × **2 modes**:
-- **Total combinations:** 6
+### Template-Based Extraction Benchmark
 
-**OCR Engine:**
-- Tesseract OCR (fast baseline, ~4-5s/page)
+**Configuration:**
+- **OCR Engine:** PaddleOCR (30s/document)
+- **LLM Models:** 2 (Qwen 2.5 7B, Mistral 7B)
+- **Modes:** 2 (extraction-only, validation+extraction)
+- **Total combinations:** 4 (2 models × 2 modes)
 
-**LLM Models:**
-1. Qwen 2.5 3B (general-purpose)
-2. Qwen 2.5 7B (general-purpose)
-3. Mistral 7B (general-purpose)
+**Modes:**
+1. **Extraction-only**: Direct parameter extraction from OCR text
+2. **Validation+extraction**: Two-stage approach with validation and mapping
 
-### OCR Comparison (ocr_comparison.py)
-Compares **2 OCR engines** side-by-side (no LLM):
-1. Tesseract OCR (speed priority)
-2. EasyOCR (accuracy priority)
+**Expected Performance:**
+- **Total time per document:** ~190-200s (30s OCR + 160-170s LLM extraction)
+- **Completeness:** 100% for both 7B models
+- **Accuracy:** High (detects abnormal values, reference ranges)
+
+---
+
+## Template System
+
+### Template Types
+1. **Hematology CBC** (HEMATOLOGY_CBC_v1.0)
+   - 20 parameters across 4 sections
+   - Gender/age-specific reference ranges
+   - Critical value detection
+
+2. **Serology Dengue** (SEROLOGY_DENGUE_PROFILE_v1.0)
+   - 3 parameters (NS1, IgG, IgM)
+   - Clinical interpretation patterns
+
+3. **Biochemistry Lipid** (BIOCHEMISTRY_LIPID_PROFILE_v1.0)
+   - 9 parameters
+   - Cardiovascular risk stratification
+
+### Extraction Approach: Two-Stage V2
+**Stage 1:** Free-form LLM extraction (no template constraints)
+**Stage 2:** Python mapping to template structure
+
+**Why two-stage:**
+- LLMs struggle with strict JSON schema adherence in single shot
+- Separating extraction from structure mapping improves completeness
+- Achieves 100% vs 40-70% with single-stage approach
 
 ---
 
 ## License Summary
 
-| Component | License | Commercial Use | Restrictions |
-|-----------|---------|----------------|--------------|
-| **Tesseract** | **Apache 2.0** | ✅ **Yes** | **None** |
-| **EasyOCR** | **Apache 2.0** | ✅ **Yes** | **None** |
-| ~~PaddleOCR~~ | ~~Apache 2.0~~ | ❌ **Removed** | **Python 3.13 incompatible** |
-| ~~Surya OCR~~ | ~~Apache 2.0~~ | ❌ **Removed** | **API unstable** |
-| ~~DeepSeek-OCR~~ | ~~MIT~~ | ❌ **Removed** | **Requires GPU** |
-| Qwen 2.5 | Apache 2.0 | ✅ Yes | None |
-| Mistral 7B | Apache 2.0 | ✅ Yes | None |
-| ~~Meditron~~ | ~~Apache 2.0~~ | ❌ **Removed** | **Outdated model** |
-| ~~BioMistral Q6_K~~ | ~~Apache 2.0~~ | ❌ **Removed** | **Model corruption** |
-| ~~BioMistral Q4~~ | ~~Apache 2.0~~ | ❌ **Removed** | **Model corruption** |
-| Llama 3.2 | Llama 3 License | ⚠️ Yes* | *Restrictions if >700M users |
-| Gemma 2 | Gemma ToU | ⚠️ Yes* | *Some model restrictions |
+| Component | License | Commercial Use | Status |
+|-----------|---------|----------------|--------|
+| **PaddleOCR** | **Apache 2.0** | ✅ **Yes** | **Active** |
+| **Qwen 2.5 7B** | **Apache 2.0** | ✅ **Yes** | **Active** |
+| **Mistral 7B** | **Apache 2.0** | ✅ **Yes** | **Active** |
+| Tesseract OCR | Apache 2.0 | - | Removed (poor layout) |
+| Qwen 2.5 3B | Apache 2.0 | - | Removed (low accuracy) |
+
+All active components are **Apache 2.0 licensed** - fully permissive for commercial use.
 
 ---
 
-## Notes
+## Performance Benchmarks
 
-### Two Benchmark Types
+### PaddleOCR vs Tesseract Comparison
 
-**1. LLM Benchmark** (`comprehensive_benchmark.py`)
-- **Purpose:** Compare LLM model performance for medical document extraction
-- **OCR:** Tesseract only (fast baseline, minimizes OCR variable)
-- **Focus:** LLM accuracy, speed, and extraction quality
-- **Combinations:** 6 (1 OCR × 3 LLMs × 2 modes)
-- **Use when:** Testing different LLM models for production
+| Metric | Tesseract | PaddleOCR | Improvement |
+|--------|-----------|-----------|-------------|
+| **Layout Preservation** | Poor (40+ line gaps) | Excellent (adjacent lines) | Critical fix |
+| **Qwen 7B Completeness** | 40% | 100% | +60% |
+| **Mistral 7B Completeness** | 70% | 100% | +30% |
+| **Processing Time** | ~5s/page | ~30s/document | Acceptable tradeoff |
 
-**2. OCR Comparison** (`ocr_comparison.py`)
-- **Purpose:** Compare OCR engine accuracy and speed
-- **OCR:** Tesseract vs EasyOCR (no LLM processing)
-- **Focus:** OCR text extraction quality
-- **Combinations:** 2 OCR engines
-- **Use when:** Evaluating OCR engine selection
+### Model Performance (with PaddleOCR)
 
-### General Notes
-- **2 OCR engines supported:** Tesseract (speed), EasyOCR (accuracy)
-- **3 LLM models supported:** 3 general-purpose models
-- All supported components are **Apache 2.0 licensed** - fully permissive for commercial use
-- Removed engines (PaddleOCR, Surya OCR, DeepSeek-OCR) have compatibility or resource issues
-- Removed models:
-  - Meditron (outdated)
-  - BioMistral Q6_K (model corruption - returns empty responses)
-  - BioMistral Q4 (model corruption - returns empty responses)
-- For best results:
-  - **LLM benchmark:** Uses Tesseract for consistent baseline
-  - **OCR comparison:** Compare Tesseract (fast) vs EasyOCR (accurate)
-  - **Speed priority:** Use Qwen 2.5 3B
-  - **Accuracy priority:** Use Qwen 2.5 7B or Mistral 7B
+| Model | Completeness | Extraction Time | Total Time | Abnormal Detection |
+|-------|--------------|-----------------|------------|-------------------|
+| Qwen 2.5 7B | 100% (20/20) | ~160s | ~190s | 6 abnormal findings |
+| Mistral 7B | 100% (20/20) | ~165s | ~195s | 5 abnormal findings |
+
+**Conclusion:** Both 7B models achieve perfect extraction with PaddleOCR. Choose based on preference or speed requirements.

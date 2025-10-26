@@ -1,0 +1,420 @@
+{
+  "templateId": "HEMATOLOGY_CBC_v1.0",
+  "testType": "COMPLETE_BLOOD_COUNT",
+  "displayName": "Complete Blood Count (CBC)",
+  "department": "HEMATOLOGY",
+  "version": "1.0",
+  "standardSource": "NABL/WHO",
+  "lastUpdated": "2024-10-26",
+
+  "metadata": {
+    "specimenType": "WHOLE_BLOOD_EDTA",
+    "commonAliases": ["CBC", "Hemogram", "Blood Count", "Complete Blood Count"],
+    "typicalTurnaroundTime": "2-4 hours",
+    "fasting": false
+  },
+
+  "sections": [
+    {
+      "sectionId": "CBC_PRIMARY",
+      "sectionName": "Complete Blood Count - Primary Parameters",
+      "parameters": [
+        {
+          "parameterId": "HEMOGLOBIN",
+          "displayName": "Haemoglobin",
+          "aliases": ["HB", "Hgb", "Hemoglobin", "HAEMOGLOBIN"],
+          "required": true,
+          "unit": "g/dL",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "male": {"min": 13.0, "max": 17.0},
+            "female": {"min": 12.0, "max": 16.0},
+            "child_1_5": {"min": 11.0, "max": 14.0},
+            "child_6_12": {"min": 11.5, "max": 15.0}
+          },
+          "criticalValues": {
+            "low": 7.0,
+            "high": 20.0
+          },
+          "methodology": "Spectrophotometer"
+        },
+        {
+          "parameterId": "PCV",
+          "displayName": "Packed Cell Volume (PCV)",
+          "aliases": ["PCV", "Hematocrit", "HCT"],
+          "required": true,
+          "unit": "%",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "male": {"min": 40.0, "max": 50.0},
+            "female": {"min": 36.0, "max": 46.0}
+          },
+          "criticalValues": {
+            "low": 25.0,
+            "high": 60.0
+          },
+          "methodology": "Electronic pulse & Calculation"
+        },
+        {
+          "parameterId": "RBC_COUNT",
+          "displayName": "RBC Count",
+          "aliases": ["RBC", "Red Blood Cell Count", "Erythrocyte Count", "RBC COUNT"],
+          "required": true,
+          "unit": "Million/cu.mm",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "male": {"min": 4.5, "max": 5.5},
+            "female": {"min": 4.0, "max": 5.0}
+          },
+          "criticalValues": {
+            "low": 2.5,
+            "high": 7.0
+          },
+          "methodology": "Electrical Impedence"
+        },
+        {
+          "parameterId": "MCV",
+          "displayName": "Mean Corpuscular Volume",
+          "aliases": ["MCV"],
+          "required": true,
+          "unit": "fL",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 83.0, "max": 101.0}
+          },
+          "criticalValues": {
+            "low": 70.0,
+            "high": 110.0
+          },
+          "methodology": "Calculated",
+          "formula": "PCV / RBC_COUNT * 10"
+        },
+        {
+          "parameterId": "MCH",
+          "displayName": "Mean Corpuscular Hemoglobin",
+          "aliases": ["MCH"],
+          "required": true,
+          "unit": "pg",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 27.0, "max": 32.0}
+          },
+          "criticalValues": {
+            "low": 22.0,
+            "high": 37.0
+          },
+          "methodology": "Calculated",
+          "formula": "HEMOGLOBIN / RBC_COUNT * 10"
+        },
+        {
+          "parameterId": "MCHC",
+          "displayName": "Mean Corpuscular Hemoglobin Concentration",
+          "aliases": ["MCHC"],
+          "required": true,
+          "unit": "g/dL",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 31.5, "max": 34.5}
+          },
+          "criticalValues": {
+            "low": 28.0,
+            "high": 37.0
+          },
+          "methodology": "Calculated",
+          "formula": "HEMOGLOBIN / PCV * 100"
+        },
+        {
+          "parameterId": "RDW",
+          "displayName": "Red Cell Distribution Width",
+          "aliases": ["RDW", "R.D.W", "RDW-CV"],
+          "required": true,
+          "unit": "%",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 11.6, "max": 14.0}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 20.0
+          },
+          "methodology": "Calculated"
+        },
+        {
+          "parameterId": "WBC_COUNT",
+          "displayName": "Total Leucocyte Count (TLC)",
+          "aliases": ["WBC", "TLC", "White Blood Cell Count", "Leucocyte Count", "TOTAL LEUCOCYTE COUNT", "TOTAL LEUCOCYTE COUNT (TLC)"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 4000, "max": 10000}
+          },
+          "criticalValues": {
+            "low": 2000,
+            "high": 30000
+          },
+          "methodology": "Electrical Impedance"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "DLC",
+      "sectionName": "Differential Leucocyte Count (DLC)",
+      "description": "Percentage distribution of white blood cells",
+      "parameters": [
+        {
+          "parameterId": "NEUTROPHILS_PERCENT",
+          "displayName": "Neutrophils",
+          "aliases": ["Neutrophils", "Neutrophil %", "Poly", "NEUTROPHILS"],
+          "required": true,
+          "unit": "%",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 40, "max": 80}
+          },
+          "criticalValues": {
+            "low": 20,
+            "high": 90
+          },
+          "methodology": "Flow cytometry"
+        },
+        {
+          "parameterId": "LYMPHOCYTES_PERCENT",
+          "displayName": "Lymphocytes",
+          "aliases": ["Lymphocytes", "Lymphocyte %", "Lymph", "LYMPHOCYTES"],
+          "required": true,
+          "unit": "%",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 20, "max": 40}
+          },
+          "criticalValues": {
+            "low": 10,
+            "high": 50
+          },
+          "methodology": "Flow cytometry"
+        },
+        {
+          "parameterId": "EOSINOPHILS_PERCENT",
+          "displayName": "Eosinophils",
+          "aliases": ["Eosinophils", "Eosinophil %", "Eos", "EOSINOPHILS"],
+          "required": true,
+          "unit": "%",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 1, "max": 6}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 15
+          },
+          "methodology": "Flow cytometry"
+        },
+        {
+          "parameterId": "MONOCYTES_PERCENT",
+          "displayName": "Monocytes",
+          "aliases": ["Monocytes", "Monocyte %", "Mono", "MONOCYTES"],
+          "required": true,
+          "unit": "%",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 2, "max": 10}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 15
+          },
+          "methodology": "Flow cytometry"
+        },
+        {
+          "parameterId": "BASOPHILS_PERCENT",
+          "displayName": "Basophils",
+          "aliases": ["Basophils", "Basophil %", "Baso", "BASOPHILS"],
+          "required": true,
+          "unit": "%",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 0, "max": 2}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 5
+          },
+          "methodology": "Flow cytometry"
+        },
+        {
+          "parameterId": "CORRECTED_TLC",
+          "displayName": "Corrected TLC",
+          "aliases": ["Corrected TLC", "Corrected Leucocyte Count", "CORRECTED TLC"],
+          "required": false,
+          "unit": "cells/cu.mm",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 4000, "max": 10000}
+          },
+          "methodology": "Calculated"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "ABSOLUTE_COUNT",
+      "sectionName": "Absolute Leucocyte Count",
+      "description": "Absolute counts of white blood cell types",
+      "parameters": [
+        {
+          "parameterId": "NEUTROPHILS_ABSOLUTE",
+          "displayName": "Neutrophils (Absolute)",
+          "aliases": ["Absolute Neutrophils", "ANC", "Neutrophil Count", "NEUTROPHILS"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 2000, "max": 7000}
+          },
+          "criticalValues": {
+            "low": 500,
+            "high": 20000
+          },
+          "methodology": "Calculated",
+          "formula": "WBC_COUNT * NEUTROPHILS_PERCENT / 100"
+        },
+        {
+          "parameterId": "LYMPHOCYTES_ABSOLUTE",
+          "displayName": "Lymphocytes (Absolute)",
+          "aliases": ["Absolute Lymphocytes", "ALC", "Lymphocyte Count", "LYMPHOCYTES"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 1000, "max": 3000}
+          },
+          "criticalValues": {
+            "low": 500,
+            "high": 8000
+          },
+          "methodology": "Calculated",
+          "formula": "WBC_COUNT * LYMPHOCYTES_PERCENT / 100"
+        },
+        {
+          "parameterId": "EOSINOPHILS_ABSOLUTE",
+          "displayName": "Eosinophils (Absolute)",
+          "aliases": ["Absolute Eosinophils", "AEC", "Eosinophil Count", "EOSINOPHILS"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 20, "max": 500}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 2000
+          },
+          "methodology": "Calculated",
+          "formula": "WBC_COUNT * EOSINOPHILS_PERCENT / 100"
+        },
+        {
+          "parameterId": "MONOCYTES_ABSOLUTE",
+          "displayName": "Monocytes (Absolute)",
+          "aliases": ["Absolute Monocytes", "AMC", "Monocyte Count", "MONOCYTES"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "decimal",
+          "decimalPlaces": 1,
+          "referenceRanges": {
+            "default": {"min": 200, "max": 1000}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 1500
+          },
+          "methodology": "Calculated",
+          "formula": "WBC_COUNT * MONOCYTES_PERCENT / 100"
+        },
+        {
+          "parameterId": "NLR",
+          "displayName": "Neutrophil-Lymphocyte Ratio",
+          "aliases": ["NLR", "N/L Ratio", "Neutrophil lymphocyte ratio", "Neutrophil lymphocyte ratio (NLR)"],
+          "required": false,
+          "unit": "",
+          "dataType": "decimal",
+          "decimalPlaces": 2,
+          "referenceRanges": {
+            "default": {"min": 0.78, "max": 3.53}
+          },
+          "criticalValues": {
+            "low": null,
+            "high": 10.0
+          },
+          "methodology": "Calculated",
+          "formula": "NEUTROPHILS_ABSOLUTE / LYMPHOCYTES_ABSOLUTE"
+        }
+      ]
+    },
+
+    {
+      "sectionId": "PLATELET",
+      "sectionName": "Platelet Count",
+      "parameters": [
+        {
+          "parameterId": "PLATELET_COUNT",
+          "displayName": "Platelet Count",
+          "aliases": ["Platelets", "PLT", "Thrombocyte Count", "PLATELET COUNT"],
+          "required": true,
+          "unit": "cells/cu.mm",
+          "dataType": "integer",
+          "referenceRanges": {
+            "default": {"min": 150000, "max": 410000}
+          },
+          "criticalValues": {
+            "low": 50000,
+            "high": 1000000
+          },
+          "methodology": "Electrical impedence"
+        }
+      ]
+    }
+  ],
+
+  "clinicalInterpretation": {
+    "anemia": {
+      "condition": "HEMOGLOBIN < referenceRange.min",
+      "severity": {
+        "mild": "HEMOGLOBIN between 10-12",
+        "moderate": "HEMOGLOBIN between 7-10",
+        "severe": "HEMOGLOBIN < 7"
+      }
+    },
+    "leukopenia": {
+      "condition": "WBC_COUNT < 4000"
+    },
+    "leukocytosis": {
+      "condition": "WBC_COUNT > 10000"
+    },
+    "thrombocytopenia": {
+      "condition": "PLATELET_COUNT < 150000",
+      "severity": {
+        "mild": "100000-150000",
+        "moderate": "50000-100000",
+        "severe": "< 50000"
+      }
+    }
+  },
+
+  "qualityNotes": [
+    "Result is rechecked. Kindly correlate clinically.",
+    "If NRBC present, corrected TLC should be calculated",
+    "Platelet clumping may give falsely low count"
+  ]
+}
