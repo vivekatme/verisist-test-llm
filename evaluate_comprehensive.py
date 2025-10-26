@@ -32,13 +32,17 @@ def generate_accuracy_score(result: dict) -> dict:
     """Calculate accuracy metrics for a combination"""
     extraction = result.get("extraction", {})
 
+    # Handle None extraction (error cases)
+    if extraction is None:
+        extraction = {}
+
     score = {
         "has_extraction": extraction is not None and len(extraction) > 0,
         "item_count": 0,
-        "has_title": bool(extraction.get("title")),
-        "has_patient_name": bool(extraction.get("patientName")),
-        "has_date": bool(extraction.get("documentDate")),
-        "has_lab_name": bool(extraction.get("labName")),
+        "has_title": bool(extraction.get("title")) if extraction else False,
+        "has_patient_name": bool(extraction.get("patientName")) if extraction else False,
+        "has_date": bool(extraction.get("documentDate")) if extraction else False,
+        "has_lab_name": bool(extraction.get("labName")) if extraction else False,
         "has_error": bool(result.get("error"))
     }
 
