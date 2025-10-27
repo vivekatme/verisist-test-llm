@@ -67,36 +67,32 @@ class TemplateExtractorV2:
         """Generate free-form extraction prompt (no template constraints)"""
         test_name = template.get("displayName", "Medical Test")
 
-        # Get expected parameter names from template to guide extraction
+        # Get expected parameter IDs from template (simplified - just IDs, no aliases)
         expected_params = []
         for section in template.get("sections", []):
             for param in section.get("parameters", []):
                 param_id = param.get("parameterId", "")
-                display_name = param.get("displayName", "")
-                aliases = param.get("aliases", [])[:3]  # First 3 aliases
-
-                # Format: "HEMOGLOBIN (Haemoglobin, HB, Hgb)"
-                alias_str = ", ".join(aliases) if aliases else ""
-                if alias_str:
-                    expected_params.append(f"{param_id} ({alias_str})")
-                else:
+                if param_id:
                     expected_params.append(param_id)
 
+        param_count = len(expected_params)
         param_hint = "\n   - ".join(expected_params)
 
-        return f"""Extract ALL test parameters from this {test_name} report.
+        return f"""Extract test parameters from this {test_name} report.
 
-**EXPECTED PARAMETERS (use these names when possible):**
+**YOU MUST EXTRACT EXACTLY THESE {param_count} PARAMETERS (use these exact names):**
    - {param_hint}
 
-**INSTRUCTIONS:**
-1. Find EVERY test parameter with its value
-2. For each parameter extract:
-   - Parameter name: Use the expected parameter name above if you can identify it, otherwise use document name
+**CRITICAL INSTRUCTIONS:**
+1. Extract ONLY the {param_count} parameters listed above - use the exact parameter names shown
+2. Search ALL pages in the document (parameters may be on different pages)
+3. For each parameter extract:
+   - Parameter name: Use the EXACT name from the list above
    - Value (numeric or text)
    - Unit (if present)
    - Reference range min and max (if present)
-3. Also extract patient metadata
+4. Also extract patient metadata
+5. DO NOT extract parameters not in the list above (e.g., if you see "BASOPHILS_ABSOLUTE" but it's not listed, skip it)
 
 **OUTPUT FORMAT (JSON only, no markdown):**
 {{
@@ -128,10 +124,12 @@ class TemplateExtractorV2:
 }}
 
 **IMPORTANT:**
-- Extract EVERY parameter you find
-- Prefer using expected parameter names above for consistency
-- Include the reference range from the document if present
+- You MUST extract all {param_count} parameters from the list above
+- Use EXACT parameter names from the list (not document names)
+- Search ALL pages - parameters may be split across multiple pages
+- Include reference ranges from document if present
 - Return ONLY JSON, no markdown blocks
+- If a parameter is not found in the document, you may omit it (but try to find all {param_count})
 
 **OCR TEXT:**
 {ocr_text}
