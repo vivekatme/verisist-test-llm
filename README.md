@@ -12,13 +12,13 @@ Production-ready system for extracting structured data from medical documents us
 
 # 2. Test single document
 source venv/bin/activate
-python multi_model_v2_benchmark.py test.pdf
+python benchmark.py test.pdf
 
 # 3. Batch process multiple documents
-python batch_benchmark.py ~/Desktop/test-docs
+python benchmark.py ~/Desktop/test-docs
 
 # 4. View results
-open results/multi_model_v2_*.html
+open results/results_*.html
 ```
 
 ## System Architecture
@@ -81,14 +81,14 @@ Structured JSON (100% complete)
 ### Single Document Test
 
 ```bash
-python multi_model_v2_benchmark.py path/to/document.pdf
+python benchmark.py path/to/document.pdf
 ```
 
 **Output:**
 ```
 results/
-├── multi_model_v2_TIMESTAMP.json  # Raw results
-└── multi_model_v2_TIMESTAMP.html  # Interactive dashboard
+├── results_FILENAME_TIMESTAMP.json  # Raw results
+└── results_FILENAME_TIMESTAMP.html  # Interactive dashboard
 ```
 
 **Dashboard includes:**
@@ -101,7 +101,7 @@ results/
 ### Batch Processing
 
 ```bash
-python batch_benchmark.py ~/Desktop/test-docs
+python benchmark.py ~/Desktop/test-docs
 ```
 
 **Output:**
@@ -155,9 +155,8 @@ batch_results_TIMESTAMP/
 
 ## Files
 
-### Core Scripts (4 files)
-- **multi_model_v2_benchmark.py** - Single document benchmark
-- **batch_benchmark.py** - Batch processing wrapper
+### Core Scripts (3 files)
+- **benchmark.py** - Unified entry point (single file or batch directory)
 - **template_extractor_v2.py** - Two-stage extraction engine
 - **template_manager.py** - Template utilities
 
