@@ -273,11 +273,34 @@ class TemplateExtractorV2:
 
                 matched_by_section[best_section_id].append(param_obj)
 
-        # Build sections
+        # Build sections - deduplicate parameters by parameterId
         for section_id, params in matched_by_section.items():
+            # Deduplicate: keep first occurrence with non-None value for each parameterId
+            seen_params = {}
+            dedup_params = []
+
+            for param in params:
+                param_id = param.get("parameterId")
+                param_value = param.get("value")
+
+                # Skip parameters with None value
+                if param_value is None:
+                    continue
+
+                # If we haven't seen this param_id, or we have but previous was None
+                if param_id not in seen_params:
+                    seen_params[param_id] = param
+                    dedup_params.append(param)
+                # If we've seen it but current value is better (not None), replace
+                elif seen_params[param_id].get("value") is None and param_value is not None:
+                    # Replace in list
+                    idx = dedup_params.index(seen_params[param_id])
+                    dedup_params[idx] = param
+                    seen_params[param_id] = param
+
             mapped["testResults"]["sections"].append({
                 "sectionId": section_id,
-                "parameters": params
+                "parameters": dedup_params
             })
 
         return mapped
