@@ -1,229 +1,147 @@
-# Verisist LLM Testing - Template-Based Medical Document Extraction
+# Template-Based Medical Document Extraction
 
-Test project for template-based extraction of medical documents using PaddleOCR + LLM models.
+Production-ready system for extracting structured data from medical documents using PaddleOCR + LLM + Templates.
 
-## Current System
-
-**Architecture:** PaddleOCR (table-aware) + LLM (Qwen 7B / Mistral 7B) + Template Mapping
-
-**Performance:** 100% completeness on CBC lab reports with both 7B models
+**Performance:** 100% completeness on CBC lab reports with both 7B models.
 
 ## Quick Start
 
 ```bash
-# 1. Install system dependencies
-brew install ollama poppler
+# 1. Run setup (installs dependencies + pulls models)
+./setup.sh
 
-# 2. Pull LLM models (~9.5GB total)
-ollama pull qwen2.5:7b    # 4.7GB - Primary model
-ollama pull mistral:7b    # 4.1GB - Alternative model
-
-# 3. Install Python dependencies
-python3 -m venv venv
+# 2. Test single document
 source venv/bin/activate
-pip install paddlepaddle paddleocr pdf2image Pillow requests
-
-# 4. Run single document test
 python multi_model_v2_benchmark.py test.pdf
 
-# 5. Run batch processing
+# 3. Batch process multiple documents
 python batch_benchmark.py ~/Desktop/test-docs
 
-# 6. View results
+# 4. View results
 open results/multi_model_v2_*.html
 ```
 
-## What It Does
+## System Architecture
 
-### Template-Based Extraction
+```
+PDF Document
+    ↓
+[PaddleOCR] - Table-aware text extraction (~30s)
+    ↓
+[Template Manager] - Auto-detect test type
+    ↓
+[LLM Extraction] - Two-stage extraction (~160s per model)
+    ↓
+[Template Mapping] - Map to JSON structure + validation
+    ↓
+Structured JSON (100% complete)
+```
 
-1. **OCR (PaddleOCR)**: Extracts text from PDF with proper table layout preservation
-   - Time: ~30s for 3-page document
-   - Critical: Keeps parameter names and values adjacent (not 40+ lines apart like Tesseract)
+## Configuration
 
-2. **Template Identification**: Auto-detects test type from OCR text
-   - Supported: Hematology CBC, Dengue Profile, Lipid Profile
+- **OCR Engine:** PaddleOCR (CPU-based, no GPU needed)
+- **LLM Models:** Qwen 2.5 7B, Mistral 7B (via Ollama)
+- **Templates:** 3 medical test types
+- **Modes:** 2 per model (extraction-only, validation+extraction)
+- **Total:** 4 combinations per document
 
-3. **Two-Stage LLM Extraction**:
-   - **Stage 1**: Free-form parameter extraction (no template constraints)
-   - **Stage 2**: Python mapping to template structure with validation
-   - Time: ~160-170s per document
-   - Result: 100% completeness
+## Supported Document Types
 
-### Supported Document Types
+### 1. Hematology CBC (Complete Blood Count)
+- **Parameters:** 20 (Hemoglobin, PCV, RBC, WBC, Platelets, etc.)
+- **Features:** Gender/age-specific reference ranges
+- **Template:** `templates/hematology_cbc.json`
 
-1. **Hematology CBC** (Complete Blood Count)
-   - 20 parameters across 4 sections
-   - Gender/age-specific reference ranges
-   - Abnormal value detection (HIGH/LOW/NORMAL)
+### 2. Serology Dengue Profile
+- **Parameters:** 3 (NS1 Antigen, IgG, IgM)
+- **Features:** Clinical interpretation patterns
+- **Template:** `templates/serology_dengue.json`
 
-2. **Serology Dengue Profile**
-   - 3 parameters (NS1, IgG, IgM)
-   - Clinical interpretation patterns
-
-3. **Biochemistry Lipid Profile**
-   - 9 parameters
-   - Cardiovascular risk stratification
-
-## Processing Modes
-
-### Mode 1: Extraction-Only
-- Direct parameter extraction
-- Fastest processing
-- Use when: Speed priority
-
-### Mode 2: Validation + Extraction
-- Two-stage approach with validation
-- Mapping to strict template structure
-- Use when: Maximum accuracy required
+### 3. Biochemistry Lipid Profile
+- **Parameters:** 9 (Total Cholesterol, HDL, LDL, Triglycerides, etc.)
+- **Features:** Cardiovascular risk stratification
+- **Template:** `templates/biochemistry_lipid.json`
 
 ## Performance
 
 **Per Document (3 pages):**
 - OCR (PaddleOCR): ~30s
-- LLM Extraction: ~160-170s
-- **Total**: ~190-200s
-- **Completeness**: 100%
+- LLM Extraction: ~160-170s per model
+- **Total per model:** ~190-200s
+- **Completeness:** 100%
+- **Abnormal detection:** Automatic HIGH/LOW/NORMAL status
 
-**Batch Processing (10 documents):**
+**Batch (10 documents):**
 - Total time: ~30-35 minutes
-- Parallel OCR + sequential LLM per document
+- Results: Individual JSON + HTML per document
+- Dashboard: Consolidated batch summary
 
 ## Usage
 
-### Single Document
+### Single Document Test
 
 ```bash
-# Test with default models (both 7B models in 2 modes each = 4 runs)
-python multi_model_v2_benchmark.py test.pdf
-
-# Output:
-# - results/multi_model_v2_TIMESTAMP.json
-# - results/multi_model_v2_TIMESTAMP.html (interactive dashboard)
+python multi_model_v2_benchmark.py path/to/document.pdf
 ```
+
+**Output:**
+```
+results/
+├── multi_model_v2_TIMESTAMP.json  # Raw results
+└── multi_model_v2_TIMESTAMP.html  # Interactive dashboard
+```
+
+**Dashboard includes:**
+- Model performance comparison
+- Completeness scores
+- Abnormal findings
+- Extraction timing
+- Parameter-by-parameter view
 
 ### Batch Processing
 
 ```bash
-# Process all PDFs in a directory
 python batch_benchmark.py ~/Desktop/test-docs
-
-# Output:
-# - batch_results_TIMESTAMP/results_DOCNAME_TIMESTAMP.json (per doc)
-# - batch_results_TIMESTAMP/batch_summary.json
-# - batch_results_TIMESTAMP/batch_dashboard.html
 ```
 
-### View Results
-
-```bash
-# Open latest result dashboard
-open results/multi_model_v2_*.html
-
-# Open batch dashboard
-open batch_results_*/batch_dashboard.html
+**Output:**
+```
+batch_results_TIMESTAMP/
+├── results_document1_TIMESTAMP.json
+├── results_document2_TIMESTAMP.json
+├── ...
+└── batch_summary.json  # Consolidated summary
 ```
 
-## Key Features
+## Example Output
 
-### PaddleOCR Integration
-- Deep learning OCR with table layout preservation
-- Handles medical report tables correctly
-- 2x slower than Tesseract but critical for accuracy
-- Python 3.13 compatible (with imghdr shim)
-
-### Template System
-- JSON schemas for each test type
-- Parameter aliases for matching variations
-- Reference range lookup (gender/age-specific)
-- Status calculation (HIGH/LOW/NORMAL)
-- Abnormal finding detection
-
-### Two-Stage Extraction
-- Stage 1: LLM extracts all parameters freely
-- Stage 2: Python maps to template structure
-- Achieves 100% vs 40-70% with single-stage
-
-## Models
-
-### Active Models (2)
-- **Qwen 2.5 7B**: 100% completeness, ~160s extraction
-- **Mistral 7B**: 100% completeness, ~165s extraction
-
-Both models achieve identical 100% completeness with PaddleOCR.
-
-### Removed Models
-- Qwen 2.5 3B: Only 10% completeness (insufficient)
-- Meditron 7B: Outdated, removed per user request
-- BioMistral variants: Model corruption issues
-
-See [MODELS.md](MODELS.md) for detailed model information.
-
-## Benchmark Results
-
-**PaddleOCR vs Tesseract:**
-| Metric | Tesseract | PaddleOCR |
-|--------|-----------|-----------|
-| Qwen 7B Completeness | 40% | **100%** (+60%) |
-| Mistral 7B Completeness | 70% | **100%** (+30%) |
-| Processing Time | ~15s | ~30s (+15s) |
-| Layout Preservation | Poor | Excellent |
-
-**Conclusion:** PaddleOCR's 15s overhead is negligible compared to 160s LLM time, and it's critical for 100% accuracy.
-
-## Files
-
-**Core Scripts:**
-- `multi_model_v2_benchmark.py` - Single document benchmark (2 models × 2 modes)
-- `batch_benchmark.py` - Batch processing for multiple documents
-- `template_manager.py` - Template loading and management
-- `template_extractor_v2.py` - Two-stage extraction logic
-
-**Templates:**
-- `templates/hematology_cbc.json` - CBC template (20 parameters)
-- `templates/serology_dengue.json` - Dengue profile (3 parameters)
-- `templates/biochemistry_lipid.json` - Lipid profile (9 parameters)
-
-**Documentation:**
-- `README.md` - This file
-- `MODELS.md` - Model details and performance
-- `TEMPLATE_SYSTEM_README.md` - Template architecture
-- `QUICK_START_TEMPLATE.md` - Template creation guide
-
-## Requirements
-
-**System:**
-- macOS (tested on MacBook Air M4)
-- Ollama for LLM inference
-- Poppler for PDF rendering
-
-**Python:**
-- Python 3.13 (with imghdr compatibility shim)
-- PaddlePaddle & PaddleOCR
-- pdf2image, Pillow, requests
-
-**Models:**
-- Qwen 2.5 7B (4.7GB)
-- Mistral 7B (4.1GB)
-
-## Output Examples
-
-### JSON Result
+### JSON Structure
 ```json
 {
   "documentMetadata": {
-    "patientName": "Mr.VIVEK GUPTA",
+    "patientName": "Mr. John Doe",
     "age": "45 Y 1 M 23 D",
-    "gender": "M"
+    "gender": "M",
+    "collectionDate": "2024-10-17"
   },
   "testResults": {
+    "templateId": "HEMATOLOGY_CBC_v1.0",
     "sections": [{
+      "sectionId": "CBC_PRIMARY",
       "parameters": [{
         "parameterId": "HEMOGLOBIN",
         "value": 13.5,
         "unit": "g/dL",
         "referenceRange": {"min": 13.0, "max": 17.0},
-        "status": "NORMAL"
+        "status": "NORMAL",
+        "flags": []
+      }, {
+        "parameterId": "WBC_COUNT",
+        "value": 3680,
+        "unit": "cells/cu.mm",
+        "referenceRange": {"min": 4000, "max": 10000},
+        "status": "LOW",
+        "flags": ["LOW"]
       }]
     }]
   },
@@ -235,20 +153,155 @@ See [MODELS.md](MODELS.md) for detailed model information.
 }
 ```
 
-### HTML Dashboard
-- Model performance comparison
-- Completeness scores
-- Abnormal findings detected
-- Extraction timing breakdown
-- Side-by-side parameter comparison
+## Files
 
-## Next Steps
+### Core Scripts (4 files)
+- **multi_model_v2_benchmark.py** - Single document benchmark
+- **batch_benchmark.py** - Batch processing wrapper
+- **template_extractor_v2.py** - Two-stage extraction engine
+- **template_manager.py** - Template utilities
 
-1. **Add More Templates**: Create templates for other test types
-2. **Optimize LLM Speed**: Explore quantized models or GPU acceleration
-3. **Enhance Validation**: Add more sophisticated abnormal finding rules
-4. **Production Integration**: API wrapper for Verisist platform
+### Templates (3 JSON files)
+- **templates/hematology_cbc.json** - CBC template
+- **templates/serology_dengue.json** - Dengue template
+- **templates/biochemistry_lipid.json** - Lipid template
+
+### Configuration
+- **setup.sh** - Automated setup script
+- **requirements.txt** - Python dependencies
+- **README.md** - This file
+- **MODELS.md** - Detailed model information
+
+## Key Features
+
+### PaddleOCR Integration
+- Deep learning OCR with table layout preservation
+- Keeps parameter-value pairs adjacent (critical for extraction)
+- CPU-based, no GPU required
+- ~30s for 3-page document
+
+### Template System
+- JSON schemas for each test type
+- Parameter aliases (e.g., "HAEMOGLOBIN" = "Hemoglobin" = "HB")
+- Gender/age-specific reference ranges
+- Automatic status calculation (HIGH/LOW/NORMAL)
+- Abnormal finding detection
+
+### Two-Stage Extraction
+- **Stage 1:** LLM free-form extraction (no constraints)
+- **Stage 2:** Python mapping to template structure
+- Achieves 100% completeness vs 40-70% single-stage
+
+## Requirements
+
+**System:**
+- macOS (tested on MacBook Air M4)
+- Ollama for LLM inference
+- Poppler for PDF rendering
+
+**Python:**
+- Python 3.13+
+- PaddlePaddle, PaddleOCR
+- pdf2image, Pillow, requests
+
+**LLM Models (via Ollama):**
+- Qwen 2.5 7B (4.7GB)
+- Mistral 7B (4.1GB)
+
+**Installation:**
+```bash
+# System dependencies
+brew install ollama poppler
+
+# LLM models
+ollama pull qwen2.5:7b
+ollama pull mistral:7b
+
+# Python dependencies
+./setup.sh
+```
+
+## Processing Modes
+
+### Mode 1: Extraction-Only
+- Direct parameter extraction
+- Faster processing
+- Use when: Speed priority, standard documents
+
+### Mode 2: Validation + Extraction
+- Two-stage with validation
+- Stricter template adherence
+- Use when: Maximum accuracy required
+
+## Why PaddleOCR?
+
+**Tesseract (Old):**
+- Read table columns separately
+- Parameter and value 40+ lines apart
+- LLM couldn't match them
+- Result: 40-70% completeness
+
+**PaddleOCR (Current):**
+- Preserves table layout
+- Parameter and value adjacent
+- LLM can match correctly
+- Result: 100% completeness
+
+**Tradeoff:**
+- PaddleOCR: 2x slower (~30s vs ~15s)
+- But total time: ~190s vs ~175s (8% difference)
+- Accuracy: 100% vs 40-70% (critical improvement)
+
+## Performance Benchmarks
+
+| Metric | Tesseract | PaddleOCR |
+|--------|-----------|-----------|
+| **Qwen 7B Completeness** | 40% | **100%** |
+| **Mistral 7B Completeness** | 70% | **100%** |
+| **OCR Time** | ~15s | ~30s |
+| **Layout Preservation** | Poor | Excellent |
 
 ## License
 
 All components use Apache 2.0 license - fully permissive for commercial use.
+
+- PaddleOCR: Apache 2.0
+- Qwen 2.5: Apache 2.0
+- Mistral 7B: Apache 2.0
+
+## Next Steps
+
+1. **Add more templates** - Create templates for other test types
+2. **Production API** - Wrap in REST API for Verisist platform
+3. **GPU optimization** - Optional GPU support for faster OCR
+4. **Template editor** - UI for creating/editing templates
+
+## Troubleshooting
+
+**Ollama not running:**
+```bash
+# Check status
+curl http://localhost:11434/api/tags
+
+# Start Ollama
+open -a Ollama
+```
+
+**Models not found:**
+```bash
+# List installed models
+ollama list
+
+# Pull missing models
+ollama pull qwen2.5:7b
+ollama pull mistral:7b
+```
+
+**PaddleOCR errors:**
+```bash
+# Reinstall dependencies
+source venv/bin/activate
+pip install --upgrade paddlepaddle paddleocr
+```
+
+For detailed model information and benchmarks, see [MODELS.md](MODELS.md).
