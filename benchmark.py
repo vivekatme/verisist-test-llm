@@ -23,6 +23,13 @@ from typing import Dict, List
 from template_manager import get_template_manager
 from template_extractor_v2 import TemplateExtractorV2
 
+# Ollama API
+try:
+    import requests
+    REQUESTS_AVAILABLE = True
+except ImportError:
+    REQUESTS_AVAILABLE = False
+
 # PDF/OCR support
 try:
     from pdf2image import convert_from_bytes
@@ -78,6 +85,110 @@ def extract_text_paddleocr(file_bytes: bytes) -> str:
         return "\n".join(page_text)
 
 
+def free_form_extraction(model_name: str, ocr_text: str) -> Dict:
+    """Free-form extraction without template constraints"""
+
+    prompt = f"""You are a medical data extraction assistant. Extract ALL test parameters from this lab report.
+
+For EVERY parameter you find, extract:
+- Parameter name (exactly as written in report)
+- Value (number)
+- Unit
+- Reference range (if present)
+
+Also extract patient metadata:
+- Patient name
+- Age
+- Gender
+- Collection date
+- Report date
+
+OCR Text:
+{ocr_text}
+
+Return ONLY a JSON object with this structure:
+{{
+  "patientName": "...",
+  "age": "...",
+  "gender": "...",
+  "collectionDate": "...",
+  "reportDate": "...",
+  "parameters": [
+    {{
+      "name": "EXACT_NAME_FROM_REPORT",
+      "value": 13.5,
+      "unit": "g/dL",
+      "referenceRange": "13-17"
+    }}
+  ]
+}}
+
+Extract ALL parameters you can find. Return ONLY the JSON, no markdown, no explanation.
+"""
+
+    try:
+        start_time = time.time()
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": model_name,
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=300
+        )
+
+        if response.status_code != 200:
+            return {
+                "success": False,
+                "error": f"HTTP {response.status_code}",
+                "timings": {"total": time.time() - start_time}
+            }
+
+        response_text = response.json().get("response", "")
+
+        # Clean up markdown if present
+        response_text = response_text.strip()
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        if response_text.startswith("```"):
+            response_text = response_text[3:]
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
+        response_text = response_text.strip()
+
+        # Parse JSON
+        data = json.loads(response_text)
+        elapsed = time.time() - start_time
+
+        # Convert to compatible format
+        param_count = len(data.get("parameters", []))
+
+        return {
+            "success": True,
+            "mode": "free_form",
+            "data": {
+                "documentMetadata": {
+                    "patientName": data.get("patientName"),
+                    "age": data.get("age"),
+                    "gender": data.get("gender"),
+                    "collectionDate": data.get("collectionDate"),
+                    "reportDate": data.get("reportDate")
+                },
+                "parameters": data.get("parameters", [])
+            },
+            "timings": {"total": elapsed},
+            "param_count": param_count
+        }
+
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "timings": {"total": time.time() - start_time}
+        }
+
+
 def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Path):
     """Generate HTML comparison dashboard"""
 
@@ -92,7 +203,7 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             comparison_rows.append(f"""
                 <tr class="error-row">
                     <td><strong>{result['model_display']}</strong></td>
-                    <td colspan="5" class="error-cell">
+                    <td colspan="6" class="error-cell">
                         ❌ {result.get('error', 'Unknown error')}
                     </td>
                 </tr>
@@ -100,6 +211,33 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             continue
 
         timings = result.get("timings", {})
+        mode = result.get("mode", "template_based")
+
+        # Free-form results
+        if mode == "free_form":
+            param_count = result.get("param_count", 0)
+            total_time = timings.get("total", 0)
+
+            if total_time < 60:
+                speed_badge = '<span class="badge badge-fast">⚡ Fast</span>'
+            elif total_time < 180:
+                speed_badge = '<span class="badge badge-medium">🔄 Medium</span>'
+            else:
+                speed_badge = '<span class="badge badge-slow">🐌 Slow</span>'
+
+            comparison_rows.append(f"""
+                <tr style="background: #fff3cd;">
+                    <td><strong>{result['model_display']}</strong></td>
+                    <td>{total_time:.2f}s {speed_badge}</td>
+                    <td>-</td>
+                    <td>{param_count} params</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+            """)
+            continue
+
+        # Template-based results
         completeness = result.get("completeness", {})
 
         # Speed badge
@@ -386,9 +524,9 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
     print(f"✅ Identified: {template.get('displayName')}")
     print(f"   Template: {template.get('templateId')}")
 
-    # Test all models
+    # Test all models with BOTH modes
     print(f"\n{'=' * 80}")
-    print("STEP 3: Two-Stage Extraction (All Models)")
+    print("STEP 3: Extraction - Free-Form AND Template-Based (All Models)")
     print('=' * 80)
 
     extractor = TemplateExtractorV2(tm)
@@ -399,9 +537,48 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
         print(f"Testing: {model_config['display']}")
         print('─' * 80)
 
+        # MODE 1: Free-Form Extraction (NO template)
+        print(f"   🔓 Mode 1: Free-Form (no template constraints)")
+        ff_result = free_form_extraction(model_config["name"], ocr_text)
+
+        if ff_result["success"]:
+            ff_count = ff_result["param_count"]
+            ff_time = ff_result["timings"]["total"]
+            print(f"      ✅ Extracted {ff_count} parameters in {ff_time:.2f}s")
+
+            all_results.append({
+                "success": True,
+                "mode": "free_form",
+                "model": model_config["name"],
+                "model_display": model_config["display"] + " (Free-Form)",
+                "file_path": file_path,
+                "template_id": "N/A",
+                "timings": {
+                    "ocr": ocr_time,
+                    "extraction": ff_time,
+                    "total": ff_time
+                },
+                "extraction": ff_result["data"],
+                "param_count": ff_count,
+                "timestamp": datetime.now().isoformat()
+            })
+        else:
+            print(f"      ❌ Failed: {ff_result.get('error')}")
+            all_results.append({
+                "success": False,
+                "mode": "free_form",
+                "model": model_config["name"],
+                "model_display": model_config["display"] + " (Free-Form)",
+                "error": ff_result.get("error"),
+                "file_path": file_path,
+                "timings": {"ocr": ocr_time}
+            })
+
+        # MODE 2: Template-Based Extraction
+        print(f"   📋 Mode 2: Template-Based (with template mapping)")
         start_time = time.time()
 
-        result = extractor.extract_with_llm(
+        tb_result = extractor.extract_with_llm(
             model_name=model_config["name"],
             ocr_text=ocr_text,
             template=template
@@ -409,19 +586,21 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
 
         total_time = time.time() - start_time
 
-        if not result.get("success"):
+        if not tb_result.get("success"):
+            print(f"      ❌ Failed: {tb_result.get('error')}")
             all_results.append({
                 "success": False,
+                "mode": "template_based",
                 "model": model_config["name"],
-                "model_display": model_config["display"],
-                "error": result.get("error"),
+                "model_display": model_config["display"] + " (Template)",
+                "error": tb_result.get("error"),
                 "file_path": file_path,
                 "timings": {"ocr": ocr_time, "total": total_time}
             })
             continue
 
-        # Calculate completeness
-        data = result.get("data", {})
+        # Calculate completeness for template-based
+        data = tb_result.get("data", {})
         sections = data.get("testResults", {}).get("sections", [])
 
         total_extracted = sum(len(s.get("parameters", [])) for s in sections)
@@ -437,19 +616,20 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
             if param.get("status") in ["HIGH", "LOW"]
         )
 
-        print(f"   Completeness: {completeness_score:.1f}%")
-        print(f"   Extracted: {total_extracted}/{total_template} parameters")
-        print(f"   Abnormal: {abnormal} parameters")
+        print(f"      ✅ Completeness: {completeness_score:.1f}% ({total_extracted}/{total_template})")
+        print(f"      ✅ Abnormal: {abnormal} parameters")
+        print(f"      ✅ Time: {total_time:.2f}s")
 
         all_results.append({
             "success": True,
+            "mode": "template_based",
             "model": model_config["name"],
-            "model_display": model_config["display"],
+            "model_display": model_config["display"] + " (Template)",
             "file_path": file_path,
             "template_id": template.get("templateId"),
             "timings": {
                 "ocr": ocr_time,
-                "stage1": result.get("timings", {}).get("stage1", 0),
+                "stage1": tb_result.get("timings", {}).get("stage1", 0),
                 "total": total_time
             },
             "extraction": data,
@@ -514,11 +694,12 @@ def find_pdf_files(directory: str) -> list:
 def process_single_file(file_path: str):
     """Process a single document"""
     print("\n" + "=" * 80)
-    print("  TEMPLATE-BASED EXTRACTION - SINGLE DOCUMENT")
+    print("  MEDICAL DOCUMENT EXTRACTION - COMPARISON TEST")
     print("=" * 80)
     print(f"\n📄 Document: {Path(file_path).name}")
     print(f"🤖 Models: {len(LLM_MODELS)} ({', '.join(m['display'] for m in LLM_MODELS)})")
-    print(f"✨ Approach: Two-Stage (PaddleOCR + LLM + Template Mapping)")
+    print(f"🔬 Modes: 2 per model (Free-Form + Template-Based)")
+    print(f"📊 Total Tests: {len(LLM_MODELS) * 2} ({len(LLM_MODELS)} models × 2 modes)")
 
     output_dir = Path("results")
     result = process_document(file_path, output_dir)
