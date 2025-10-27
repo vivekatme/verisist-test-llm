@@ -230,8 +230,8 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
                     <td><strong>{result['model_display']}</strong></td>
                     <td>{total_time:.2f}s {speed_badge}</td>
                     <td>-</td>
-                    <td>{param_count} params</td>
                     <td>N/A</td>
+                    <td>{param_count} params</td>
                     <td>N/A</td>
                 </tr>
             """)
@@ -717,23 +717,30 @@ def process_single_file(file_path: str):
     successful = [r for r in all_results if r.get("success")]
     failed = [r for r in all_results if not r.get("success")]
 
-    print(f"\n✅ Successful: {len(successful)}/{len(LLM_MODELS)}")
+    total_tests = len(LLM_MODELS) * 2  # 2 modes per model
+    print(f"\n✅ Successful: {len(successful)}/{total_tests}")
     if failed:
-        print(f"❌ Failed: {len(failed)}/{len(LLM_MODELS)}")
+        print(f"❌ Failed: {len(failed)}/{total_tests}")
 
     if successful:
         print(f"\n📊 Performance Comparison:")
-        print(f"{'Model':<20} {'Time':<12} {'Completeness':<15} {'Parameters':<15}")
-        print("─" * 62)
+        print(f"{'Model':<35} {'Time':<12} {'Completeness':<15} {'Parameters':<15}")
+        print("─" * 77)
 
         for r in successful:
             model = r['model_display']
             time_val = f"{r['timings']['total']:.2f}s"
-            comp = r['completeness']
-            comp_val = f"{comp['completenessScore']:.1f}%"
-            params = f"{comp['extractedParameters']}/{comp['totalParameters']}"
+            mode = r.get('mode', 'template_based')
 
-            print(f"{model:<20} {time_val:<12} {comp_val:<15} {params:<15}")
+            if mode == 'free_form':
+                comp_val = 'N/A'
+                params = f"{r.get('param_count', 0)} params"
+            else:
+                comp = r['completeness']
+                comp_val = f"{comp['completenessScore']:.1f}%"
+                params = f"{comp['extractedParameters']}/{comp['totalParameters']}"
+
+            print(f"{model:<35} {time_val:<12} {comp_val:<15} {params:<15}")
 
     print(f"\n💾 Results saved to:")
     print(f"   JSON: {result['json_file']}")
