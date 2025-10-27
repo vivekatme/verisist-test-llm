@@ -58,58 +58,47 @@ class TemplateExtractorV2:
         }
 
     def _get_freeform_prompt(self, ocr_text: str, template: Dict) -> str:
-        """Generate free-form extraction prompt (no template constraints)"""
+        """Generate simplified free-form extraction prompt"""
         test_name = template.get("displayName", "Medical Test")
 
-        return f"""Extract ALL test parameters from this {test_name} report.
+        return f"""You are a medical data extraction assistant. Extract ALL test parameters from this {test_name} lab report.
 
-**INSTRUCTIONS:**
-1. Find EVERY test parameter with its value
-2. For each parameter extract:
-   - Parameter name (as it appears in document)
-   - Value (numeric or text)
-   - Unit (if present)
-   - Reference range min and max (if present)
-3. Also extract patient metadata
+For EVERY parameter you find, extract:
+- Parameter name (exactly as written in report)
+- Value (number)
+- Unit
+- Reference range (if present)
 
-**OUTPUT FORMAT (JSON only, no markdown):**
+Also extract patient metadata:
+- Patient name
+- Age
+- Gender
+- Collection date
+- Report date
+
+OCR Text:
+{ocr_text}
+
+Return ONLY a JSON object with this structure:
 {{
   "metadata": {{
-    "patientName": "string",
-    "age": "string",
-    "gender": "M/F",
-    "uhid": "string",
-    "labName": "string",
-    "collectionDate": "YYYY-MM-DD",
-    "reportedDate": "YYYY-MM-DD"
+    "patientName": "...",
+    "age": "...",
+    "gender": "...",
+    "collectionDate": "...",
+    "reportedDate": "..."
   }},
   "parameters": [
     {{
-      "name": "HAEMOGLOBIN",
+      "name": "EXACT_NAME_FROM_REPORT",
       "value": 13.5,
       "unit": "g/dL",
-      "refMin": 13.0,
-      "refMax": 17.0
-    }},
-    {{
-      "name": "WBC COUNT",
-      "value": 3680,
-      "unit": "cells/cu.mm",
-      "refMin": 4000,
-      "refMax": 10000
+      "referenceRange": "13-17"
     }}
   ]
 }}
 
-**IMPORTANT:**
-- Extract EVERY parameter you find
-- Include the reference range from the document if present
-- Return ONLY JSON, no markdown blocks
-
-**OCR TEXT:**
-{ocr_text}
-
-**YOUR RESPONSE (JSON only):**
+Extract ALL parameters you can find. Return ONLY the JSON, no markdown, no explanation.
 """
 
     def _call_llm(self, model_name: str, prompt: str) -> Tuple[str, float, Optional[str]]:
@@ -223,16 +212,28 @@ class TemplateExtractorV2:
 
                 # Create parameter object
                 ref_range = {}
-                if ext_param.get("refMin") is not None and ext_param.get("refMax") is not None:
-                    ref_range = {
-                        "min": ext_param.get("refMin"),
-                        "max": ext_param.get("refMax")
-                    }
-                    ref_source = "document"
+                ref_source = "template"
+
+                # Try to parse referenceRange string (e.g., "13-17" or "13.0-17.0")
+                ref_range_str = ext_param.get("referenceRange", "")
+                if ref_range_str and isinstance(ref_range_str, str):
+                    # Try to parse "min-max" format
+                    if "-" in ref_range_str:
+                        parts = ref_range_str.split("-")
+                        try:
+                            ref_min = float(parts[0].strip())
+                            ref_max = float(parts[1].strip())
+                            ref_range = {"min": ref_min, "max": ref_max}
+                            ref_source = "document"
+                        except (ValueError, IndexError):
+                            # Failed to parse, use template default
+                            ref_range = self.template_manager.get_reference_range(best_match)
+                    else:
+                        # No hyphen, use template default
+                        ref_range = self.template_manager.get_reference_range(best_match)
                 else:
-                    # Use template default
+                    # No reference range in extraction, use template default
                     ref_range = self.template_manager.get_reference_range(best_match)
-                    ref_source = "template"
 
                 param_obj = {
                     "parameterId": best_match.get("parameterId"),
