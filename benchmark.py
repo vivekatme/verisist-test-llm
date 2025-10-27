@@ -582,9 +582,11 @@ def process_batch(directory: str):
     for i, f in enumerate(files, 1):
         print(f"   {i}. {Path(f).name}")
 
-    # Create output directory
+    # Create output directory under results/
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = Path(f"batch_results_{timestamp}")
+    results_base = Path("results")
+    results_base.mkdir(exist_ok=True)
+    output_dir = results_base / f"batch_{timestamp}"
     output_dir.mkdir(exist_ok=True)
 
     print(f"\n📂 Output Directory: {output_dir}")
@@ -671,7 +673,7 @@ def main():
         print("  python benchmark.py ~/Desktop/test-docs")
         print("\nOUTPUT:")
         print("  Single: results/results_FILENAME_TIMESTAMP.{json,html}")
-        print("  Batch:  batch_results_TIMESTAMP/")
+        print("  Batch:  results/batch_TIMESTAMP/")
         print("\nNOTE:")
         print("  - Uses PaddleOCR (table-aware, 100% accuracy)")
         print("  - Tests 2 models: Qwen 2.5 7B, Mistral 7B")

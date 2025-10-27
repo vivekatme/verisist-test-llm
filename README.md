@@ -106,11 +106,12 @@ python benchmark.py ~/Desktop/test-docs
 
 **Output:**
 ```
-batch_results_TIMESTAMP/
-├── results_document1_TIMESTAMP.json
-├── results_document2_TIMESTAMP.json
-├── ...
-└── batch_summary.json  # Consolidated summary
+results/
+└── batch_TIMESTAMP/
+    ├── results_document1_TIMESTAMP.json
+    ├── results_document2_TIMESTAMP.json
+    ├── ...
+    └── batch_summary.json  # Consolidated summary
 ```
 
 ## Example Output
