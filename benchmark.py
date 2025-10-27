@@ -271,6 +271,100 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             </tr>
         """)
 
+    # Build field-by-field comparison table
+    field_comparison_rows = []
+
+    # Organize results by mode
+    results_by_mode = {}
+    for r in successful:
+        mode_name = r.get('model_display', '')
+        results_by_mode[mode_name] = r
+
+    # Collect all unique parameter names
+    all_params = set()
+    param_data = {}  # param_name -> {model_mode: {value, unit, ...}}
+
+    for r in successful:
+        mode_name = r.get('model_display', '')
+        mode_type = r.get('mode', '')
+
+        if mode_type == 'free_form':
+            # Free-form extraction
+            params = r.get('extraction', {}).get('parameters', [])
+            for p in params:
+                param_name = p.get('name', '')
+                all_params.add(param_name)
+                if param_name not in param_data:
+                    param_data[param_name] = {}
+                param_data[param_name][mode_name] = {
+                    'value': p.get('value'),
+                    'unit': p.get('unit', ''),
+                    'range': p.get('referenceRange', '')
+                }
+        else:
+            # Template-based extraction
+            sections = r.get('extraction', {}).get('testResults', {}).get('sections', [])
+            for section in sections:
+                for p in section.get('parameters', []):
+                    param_name = p.get('name', '')
+                    all_params.add(param_name)
+                    if param_name not in param_data:
+                        param_data[param_name] = {}
+                    param_data[param_name][mode_name] = {
+                        'value': p.get('value'),
+                        'unit': p.get('unit', ''),
+                        'range': p.get('referenceRange', ''),
+                        'status': p.get('status', '')
+                    }
+
+    # Build rows for each parameter
+    for param_name in sorted(all_params):
+        # Skip empty parameter names
+        if not param_name or param_name.strip() == '':
+            continue
+
+        qwen_ff = param_data.get(param_name, {}).get('Qwen 2.5 7B (Free-Form)', {})
+        qwen_tb = param_data.get(param_name, {}).get('Qwen 2.5 7B (Template)', {})
+        mistral_ff = param_data.get(param_name, {}).get('Mistral 7B (Free-Form)', {})
+        mistral_tb = param_data.get(param_name, {}).get('Mistral 7B (Template)', {})
+
+        def format_cell(data):
+            if not data or data.get('value') is None:
+                return '<td style="background: #f5f5f5; color: #999;">-</td>'
+
+            value = data.get('value', '')
+            unit = data.get('unit', '')
+            status = data.get('status', '')
+
+            # Handle complex value types (list, dict, etc.)
+            if isinstance(value, (list, dict)):
+                return '<td style="background: #fff3cd; font-size: 0.85em;">[Complex]</td>'
+
+            # Color code by status
+            bg_color = '#fff'
+            if status == 'HIGH':
+                bg_color = '#ffe6e6'
+            elif status == 'LOW':
+                bg_color = '#e6f3ff'
+
+            value_str = f"{value} {unit}".strip()
+            if status and status != 'NORMAL':
+                value_str += f" <span style='color: #c0392b; font-weight: bold;'>({status})</span>"
+
+            return f'<td style="background: {bg_color};">{value_str}</td>'
+
+        field_comparison_rows.append(f"""
+            <tr>
+                <td><strong>{param_name}</strong></td>
+                {format_cell(qwen_ff)}
+                {format_cell(qwen_tb)}
+                {format_cell(mistral_ff)}
+                {format_cell(mistral_tb)}
+            </tr>
+        """)
+
+    field_comparison_html = "".join(field_comparison_rows)
+
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -451,6 +545,25 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
                     </thead>
                     <tbody>
                         {"".join(comparison_rows)}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">🔍 Field-by-Field Comparison</h2>
+                <p style="margin-bottom: 20px; color: #666;">Compare extracted values across all model/mode combinations for each parameter</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Parameter</th>
+                            <th>Qwen 2.5 7B<br/>(Free-Form)</th>
+                            <th>Qwen 2.5 7B<br/>(Template)</th>
+                            <th>Mistral 7B<br/>(Free-Form)</th>
+                            <th>Mistral 7B<br/>(Template)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {field_comparison_html}
                     </tbody>
                 </table>
             </div>
