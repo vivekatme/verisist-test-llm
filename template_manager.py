@@ -134,6 +134,97 @@ class TemplateManager:
 
         return None
 
+    def identify_test_type_with_llm(self, ocr_text: str, model_name: str = "qwen2.5:7b") -> Optional[str]:
+        """
+        Use LLM to identify test type from OCR text.
+        More accurate than keyword matching, especially for ambiguous cases.
+
+        Returns the test_type if identified, None otherwise.
+        """
+        import requests
+
+        # Build template options for LLM
+        template_options = []
+        for template_id, template in self.templates.items():
+            test_type = template.get("testType")
+            display_name = template.get("displayName")
+            department = template.get("department")
+
+            # Get sample parameter names
+            sample_params = []
+            for section in template.get("sections", [])[:1]:  # First section only
+                for param in section.get("parameters", [])[:5]:  # First 5 params
+                    sample_params.append(param.get("displayName", ""))
+
+            template_options.append({
+                "test_type": test_type,
+                "name": display_name,
+                "department": department,
+                "sample_params": sample_params
+            })
+
+        # Build prompt
+        options_text = "\n".join([
+            f"{i+1}. {opt['name']} ({opt['department']})\n   Key parameters: {', '.join(opt['sample_params'][:3])}"
+            for i, opt in enumerate(template_options)
+        ])
+
+        prompt = f"""Identify which medical test type this report belongs to.
+
+Available test types:
+{options_text}
+
+OCR Text (first 1000 characters):
+{ocr_text[:1000]}
+
+INSTRUCTIONS:
+1. Read the OCR text carefully
+2. Identify which test type it matches based on the parameters present
+3. Return ONLY the test type name from the options above, nothing else
+4. If unsure or no match, return "UNKNOWN"
+
+Your response (test type name only):"""
+
+        try:
+            response = requests.post(
+                "http://localhost:11434/api/generate",
+                json={
+                    "model": model_name,
+                    "prompt": prompt,
+                    "system": "You are a medical test classification assistant. Identify test types accurately.",
+                    "stream": False,
+                    "options": {"temperature": 0.0}  # Deterministic
+                },
+                timeout=30  # Fast identification
+            )
+
+            if response.status_code == 200:
+                result = response.json().get("response", "").strip().upper()
+
+                # Try to match result to known test types
+                for opt in template_options:
+                    test_type = opt['test_type']
+                    display_name = opt['name'].upper()
+
+                    if test_type in result or display_name in result:
+                        return test_type
+
+                # Check for partial matches
+                if "CBC" in result or "BLOOD COUNT" in result:
+                    return "COMPLETE_BLOOD_COUNT"
+                elif "LIPID" in result or "CHOLESTEROL" in result:
+                    return "LIPID_PROFILE"
+                elif "DENGUE" in result:
+                    return "DENGUE_PROFILE"
+
+                return None
+            else:
+                return None
+
+        except Exception as e:
+            print(f"   ⚠️  LLM identification failed: {e}")
+            return None
+
     def match_parameter(self, parameter_name: str, section_params: List[Dict]) -> Optional[Dict]:
         """
         Match a parameter name (from OCR) to a template parameter definition.

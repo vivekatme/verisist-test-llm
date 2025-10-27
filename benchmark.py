@@ -542,22 +542,55 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
 
     # Identify test type
     print(f"\n{'=' * 80}")
-    print("STEP 2: Identify Test Type")
+    print("STEP 2: Identify Test Type (with LLM validation)")
     print('=' * 80)
 
     tm = get_template_manager()
-    test_type = tm.identify_test_type(ocr_text)
 
-    if not test_type:
+    # Step 2a: Keyword-based identification (fast)
+    print("   Method 1: Keyword-based matching...")
+    keyword_test_type = tm.identify_test_type(ocr_text)
+
+    if keyword_test_type:
+        keyword_template = tm.get_template_by_test_type(keyword_test_type)
+        print(f"   ✅ Keyword match: {keyword_template.get('displayName')}")
+    else:
+        print(f"   ⚠️  Keyword match: No match found")
+
+    # Step 2b: LLM-based validation (accurate)
+    print("   Method 2: LLM-based identification...")
+    llm_test_type = tm.identify_test_type_with_llm(ocr_text, model_name="qwen2.5:7b")
+
+    if llm_test_type:
+        llm_template = tm.get_template_by_test_type(llm_test_type)
+        print(f"   ✅ LLM identified: {llm_template.get('displayName')}")
+    else:
+        print(f"   ⚠️  LLM identification: No match found")
+
+    # Step 2c: Choose final test type
+    if keyword_test_type and llm_test_type:
+        if keyword_test_type == llm_test_type:
+            print(f"   🎯 Both methods agree! Using: {keyword_test_type}")
+            test_type = keyword_test_type
+        else:
+            print(f"   ⚠️  Methods disagree! Keyword: {keyword_test_type}, LLM: {llm_test_type}")
+            print(f"   → Using LLM choice (more accurate): {llm_test_type}")
+            test_type = llm_test_type
+    elif llm_test_type:
+        print(f"   → Using LLM identification: {llm_test_type}")
+        test_type = llm_test_type
+    elif keyword_test_type:
+        print(f"   → Using keyword identification: {keyword_test_type}")
+        test_type = keyword_test_type
+    else:
         return {
             "success": False,
-            "error": "Could not identify test type from OCR text",
+            "error": "Could not identify test type from OCR text (both methods failed)",
             "file_path": file_path
         }
 
     template = tm.get_template_by_test_type(test_type)
-    print(f"✅ Identified: {template.get('displayName')}")
-    print(f"   Template: {template.get('templateId')}")
+    print(f"\n✅ Final Template: {template.get('displayName')} ({template.get('templateId')})")
 
     # Test all models with template-based extraction
     print(f"\n{'=' * 80}")
