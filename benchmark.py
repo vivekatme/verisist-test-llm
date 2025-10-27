@@ -540,128 +540,140 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
 
     print(f"✅ PaddleOCR completed in {ocr_time:.2f}s ({len(ocr_text)} characters)")
 
-    # Identify test type
+    # Identify ALL test types (multi-test support)
     print(f"\n{'=' * 80}")
-    print("STEP 2: Identify Test Type (with LLM validation)")
+    print("STEP 2: Identify ALL Test Types (Multi-Test Detection)")
     print('=' * 80)
 
     tm = get_template_manager()
 
-    # Step 2a: Keyword-based identification (fast)
-    print("   Method 1: Keyword-based matching...")
-    keyword_test_type = tm.identify_test_type(ocr_text)
+    # Timing dictionary
+    timing = {"ocr": ocr_time}
 
-    if keyword_test_type:
-        keyword_template = tm.get_template_by_test_type(keyword_test_type)
-        print(f"   ✅ Keyword match: {keyword_template.get('displayName')}")
+    # Step 2a: Keyword-based identification for ALL tests
+    id_start = time.time()
+    print("   Method 1: Keyword-based matching (detecting ALL tests)...")
+    all_tests = tm.identify_all_test_types(ocr_text, threshold=10)
+    timing["identification_keyword"] = time.time() - id_start
+
+    if all_tests:
+        print(f"   ✅ Found {len(all_tests)} test type(s):")
+        for i, test in enumerate(all_tests, 1):
+            print(f"      {i}. {test['display_name']} (score: {test['score']})")
     else:
-        print(f"   ⚠️  Keyword match: No match found")
-
-    # Step 2b: LLM-based validation (accurate)
-    print("   Method 2: LLM-based identification...")
-    llm_test_type = tm.identify_test_type_with_llm(ocr_text, model_name="qwen2.5:7b")
-
-    if llm_test_type:
-        llm_template = tm.get_template_by_test_type(llm_test_type)
-        print(f"   ✅ LLM identified: {llm_template.get('displayName')}")
-    else:
-        print(f"   ⚠️  LLM identification: No match found")
-
-    # Step 2c: Choose final test type
-    if keyword_test_type and llm_test_type:
-        if keyword_test_type == llm_test_type:
-            print(f"   🎯 Both methods agree! Using: {keyword_test_type}")
-            test_type = keyword_test_type
-        else:
-            print(f"   ⚠️  Methods disagree! Keyword: {keyword_test_type}, LLM: {llm_test_type}")
-            print(f"   → Using LLM choice (more accurate): {llm_test_type}")
-            test_type = llm_test_type
-    elif llm_test_type:
-        print(f"   → Using LLM identification: {llm_test_type}")
-        test_type = llm_test_type
-    elif keyword_test_type:
-        print(f"   → Using keyword identification: {keyword_test_type}")
-        test_type = keyword_test_type
-    else:
+        print(f"   ⚠️  No test types identified")
         return {
             "success": False,
-            "error": "Could not identify test type from OCR text (both methods failed)",
-            "file_path": file_path
+            "error": "Could not identify any test types from OCR text",
+            "file_path": file_path,
+            "timing": timing
         }
 
-    template = tm.get_template_by_test_type(test_type)
-    print(f"\n✅ Final Template: {template.get('displayName')} ({template.get('templateId')})")
+    print(f"   ⏱️  Identification time: {timing['identification_keyword']:.2f}s")
 
-    # Test all models with template-based extraction
+    # Extract ALL identified tests (multi-test support)
     print(f"\n{'=' * 80}")
-    print("STEP 3: Template-Based Extraction (All Models)")
+    print(f"STEP 3: Extract All {len(all_tests)} Test(s)")
     print('=' * 80)
 
     extractor = TemplateExtractorV2(tm)
     all_results = []
 
-    for model_config in LLM_MODELS:
-        print(f"\n{'─' * 80}")
-        print(f"Testing: {model_config['display']}")
-        print('─' * 80)
+    # Process each identified test
+    for test_idx, test_info in enumerate(all_tests, 1):
+        template = test_info["template"]
+        test_type = test_info["test_type"]
+        display_name = test_info["display_name"]
 
-        # Template-Based Extraction
-        print(f"   📋 Template-Based Extraction (with template mapping)")
-        start_time = time.time()
+        print(f"\n{'━' * 80}")
+        print(f"Test {test_idx}/{len(all_tests)}: {display_name}")
+        print('━' * 80)
 
-        tb_result = extractor.extract_with_llm(
-            model_name=model_config["name"],
-            ocr_text=ocr_text,
-            template=template
-        )
+        # Track timing for this test
+        test_timing = {}
 
-        total_time = time.time() - start_time
+        # Extract with each model
+        for model_config in LLM_MODELS:
+            print(f"\n{'─' * 80}")
+            print(f"Model: {model_config['display']}")
+            print('─' * 80)
 
-        if not tb_result.get("success"):
-            print(f"      ❌ Failed: {tb_result.get('error')}")
+            # Template-Based Extraction
+            extraction_start = time.time()
+
+            tb_result = extractor.extract_with_llm(
+                model_name=model_config["name"],
+                ocr_text=ocr_text,
+                template=template
+            )
+
+            extraction_time = time.time() - extraction_start
+            test_timing["extraction"] = extraction_time
+
+            if not tb_result.get("success"):
+                print(f"   ❌ Extraction failed: {tb_result.get('error')}")
+                all_results.append({
+                    "success": False,
+                    "test_type": test_type,
+                    "test_display_name": display_name,
+                    "model": model_config["name"],
+                    "model_display": model_config["display"],
+                    "error": tb_result.get("error"),
+                    "file_path": file_path,
+                    "timings": {
+                        "ocr": ocr_time,
+                        "identification": timing.get("identification_keyword", 0),
+                        "extraction": extraction_time,
+                        "total": ocr_time + timing.get("identification_keyword", 0) + extraction_time
+                    }
+                })
+                continue
+
+            # Calculate completeness
+            data = tb_result.get("data", {})
+            sections = data.get("testResults", {}).get("sections", [])
+
+            total_extracted = sum(len(s.get("parameters", [])) for s in sections)
+            template_sections = template.get("sections", [])
+            total_template = sum(len(s.get("parameters", [])) for s in template_sections)
+
+            completeness_score = (total_extracted / total_template * 100) if total_template > 0 else 0
+
+            # Count abnormal
+            abnormal = sum(
+                1 for section in sections
+                for param in section.get("parameters", [])
+                if param.get("status") in ["HIGH", "LOW"]
+            )
+
+            # Get stage1 timing from extractor
+            stage1_time = tb_result.get("timings", {}).get("stage1", 0)
+            total_time = ocr_time + timing.get("identification_keyword", 0) + extraction_time
+
+            print(f"   ✅ Completeness: {completeness_score:.1f}% ({total_extracted}/{total_template})")
+            print(f"   ✅ Abnormal: {abnormal} parameters")
+            print(f"   ⏱️  Timing Breakdown:")
+            print(f"      OCR: {ocr_time:.2f}s")
+            print(f"      Identification: {timing.get('identification_keyword', 0):.2f}s")
+            print(f"      Stage 1 (LLM extraction): {stage1_time:.2f}s")
+            print(f"      Stage 2 (mapping): {(extraction_time - stage1_time):.2f}s")
+            print(f"      Total: {total_time:.2f}s")
+
             all_results.append({
-                "success": False,
-                "mode": "template_based",
+                "success": True,
+                "test_type": test_type,
+                "test_display_name": display_name,
                 "model": model_config["name"],
-                "model_display": model_config["display"] + " (Template)",
-                "error": tb_result.get("error"),
+                "model_display": model_config["display"],
                 "file_path": file_path,
-                "timings": {"ocr": ocr_time, "total": total_time}
-            })
-            continue
-
-        # Calculate completeness for template-based
-        data = tb_result.get("data", {})
-        sections = data.get("testResults", {}).get("sections", [])
-
-        total_extracted = sum(len(s.get("parameters", [])) for s in sections)
-        template_sections = template.get("sections", [])
-        total_template = sum(len(s.get("parameters", [])) for s in template_sections)
-
-        completeness_score = (total_extracted / total_template * 100) if total_template > 0 else 0
-
-        # Count abnormal
-        abnormal = sum(
-            1 for section in sections
-            for param in section.get("parameters", [])
-            if param.get("status") in ["HIGH", "LOW"]
-        )
-
-        print(f"      ✅ Completeness: {completeness_score:.1f}% ({total_extracted}/{total_template})")
-        print(f"      ✅ Abnormal: {abnormal} parameters")
-        print(f"      ✅ Time: {total_time:.2f}s")
-
-        all_results.append({
-            "success": True,
-            "mode": "template_based",
-            "model": model_config["name"],
-            "model_display": model_config["display"] + " (Template)",
-            "file_path": file_path,
-            "template_id": template.get("templateId"),
-            "timings": {
-                "ocr": ocr_time,
-                "stage1": tb_result.get("timings", {}).get("stage1", 0),
-                "total": total_time
+                "template_id": template.get("templateId"),
+                "timings": {
+                    "ocr": ocr_time,
+                    "identification": timing.get("identification_keyword", 0),
+                    "stage1_llm": stage1_time,
+                    "stage2_mapping": extraction_time - stage1_time,
+                    "extraction_total": extraction_time,
+                    "total": total_time
             },
             "extraction": data,
             "completeness": {

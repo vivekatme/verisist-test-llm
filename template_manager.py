@@ -134,6 +134,67 @@ class TemplateManager:
 
         return None
 
+    def identify_all_test_types(self, ocr_text: str, threshold: int = 10) -> List[Dict[str, Any]]:
+        """
+        Identify ALL test types present in OCR text (for multi-test documents).
+
+        Returns list of dicts with test_type, score, and template info.
+        Sorted by score (highest first).
+        """
+        ocr_text_upper = ocr_text.upper()
+
+        matches = []
+
+        for template in self.templates.values():
+            score = 0
+            test_type = template.get("testType")
+            display_name = template.get("displayName", "").upper()
+            aliases = template.get("metadata", {}).get("commonAliases", [])
+            department = template.get("department", "").upper()
+
+            # Check display name (strong match)
+            if display_name in ocr_text_upper:
+                score += 10
+
+            # Check aliases (strong match)
+            for alias in aliases:
+                if alias.upper() in ocr_text_upper:
+                    score += 8
+
+            # Check department (weak match)
+            if department in ocr_text_upper:
+                score += 2
+
+            # Check for specific test type keywords
+            if test_type == "COMPLETE_BLOOD_COUNT":
+                if re.search(r'\b(CBC|COMPLETE BLOOD COUNT|HEMOGRAM)\b', ocr_text_upper):
+                    score += 15
+                if re.search(r'\b(HAEMOGLOBIN|HEMOGLOBIN|WBC|RBC|PLATELET)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "DENGUE_PROFILE":
+                if re.search(r'\b(DENGUE|NS1|IGG|IGM)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "LIPID_PROFILE":
+                if re.search(r'\b(LIPID|CHOLESTEROL|HDL|LDL|TRIGLYCERIDE)\b', ocr_text_upper):
+                    score += 15
+
+            # Add to matches if above threshold
+            if score >= threshold:
+                matches.append({
+                    "test_type": test_type,
+                    "template_id": template.get("templateId"),
+                    "display_name": template.get("displayName"),
+                    "score": score,
+                    "template": template
+                })
+
+        # Sort by score (highest first)
+        matches.sort(key=lambda x: x["score"], reverse=True)
+
+        return matches
+
     def identify_test_type_with_llm(self, ocr_text: str, model_name: str = "qwen2.5:7b") -> Optional[str]:
         """
         Use LLM to identify test type from OCR text.
