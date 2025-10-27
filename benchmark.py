@@ -274,15 +274,24 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
     # Build field-by-field comparison table
     field_comparison_rows = []
 
+    # Build parameterId -> displayName mapping from template
+    param_id_to_display = {}
+    for section in template.get('sections', []):
+        for param in section.get('parameters', []):
+            param_id = param.get('parameterId', '')
+            display_name = param.get('displayName', param_id)
+            if param_id:
+                param_id_to_display[param_id] = display_name
+
     # Organize results by mode
     results_by_mode = {}
     for r in successful:
         mode_name = r.get('model_display', '')
         results_by_mode[mode_name] = r
 
-    # Collect all unique parameter names
+    # Collect all unique parameter names (normalized to uppercase for matching)
     all_params = set()
-    param_data = {}  # param_name -> {model_mode: {value, unit, ...}}
+    param_data = {}  # normalized_name -> {model_mode: {value, unit, ...}, 'display_name': ...}
 
     for r in successful:
         mode_name = r.get('model_display', '')
@@ -293,24 +302,33 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             params = r.get('extraction', {}).get('parameters', [])
             for p in params:
                 param_name = p.get('name', '')
-                all_params.add(param_name)
-                if param_name not in param_data:
-                    param_data[param_name] = {}
-                param_data[param_name][mode_name] = {
+                # Normalize to uppercase for matching
+                normalized_name = param_name.upper().strip()
+                all_params.add(normalized_name)
+                if normalized_name not in param_data:
+                    param_data[normalized_name] = {'display_name': param_name}
+                # Keep original name for display if not set
+                if 'display_name' not in param_data[normalized_name] or not param_data[normalized_name]['display_name']:
+                    param_data[normalized_name]['display_name'] = param_name
+                param_data[normalized_name][mode_name] = {
                     'value': p.get('value'),
                     'unit': p.get('unit', ''),
                     'range': p.get('referenceRange', '')
                 }
         else:
-            # Template-based extraction
+            # Template-based extraction - use displayName for matching
             sections = r.get('extraction', {}).get('testResults', {}).get('sections', [])
             for section in sections:
                 for p in section.get('parameters', []):
-                    param_name = p.get('name', '')
-                    all_params.add(param_name)
-                    if param_name not in param_data:
-                        param_data[param_name] = {}
-                    param_data[param_name][mode_name] = {
+                    param_id = p.get('parameterId', '')
+                    # Use displayName from template mapping for better matching with free-form
+                    param_name = param_id_to_display.get(param_id, param_id)
+                    # Normalize to uppercase for matching
+                    normalized_name = param_name.upper().strip()
+                    all_params.add(normalized_name)
+                    if normalized_name not in param_data:
+                        param_data[normalized_name] = {'display_name': param_name}
+                    param_data[normalized_name][mode_name] = {
                         'value': p.get('value'),
                         'unit': p.get('unit', ''),
                         'range': p.get('referenceRange', ''),
@@ -318,15 +336,18 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
                     }
 
     # Build rows for each parameter
-    for param_name in sorted(all_params):
+    for normalized_name in sorted(all_params):
         # Skip empty parameter names
-        if not param_name or param_name.strip() == '':
+        if not normalized_name or normalized_name.strip() == '':
             continue
 
-        qwen_ff = param_data.get(param_name, {}).get('Qwen 2.5 7B (Free-Form)', {})
-        qwen_tb = param_data.get(param_name, {}).get('Qwen 2.5 7B (Template)', {})
-        mistral_ff = param_data.get(param_name, {}).get('Mistral 7B (Free-Form)', {})
-        mistral_tb = param_data.get(param_name, {}).get('Mistral 7B (Template)', {})
+        param_info = param_data.get(normalized_name, {})
+        display_name = param_info.get('display_name', normalized_name)
+
+        qwen_ff = param_info.get('Qwen 2.5 7B (Free-Form)', {})
+        qwen_tb = param_info.get('Qwen 2.5 7B (Template)', {})
+        mistral_ff = param_info.get('Mistral 7B (Free-Form)', {})
+        mistral_tb = param_info.get('Mistral 7B (Template)', {})
 
         def format_cell(data):
             if not data or data.get('value') is None:
@@ -355,7 +376,7 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
 
         field_comparison_rows.append(f"""
             <tr>
-                <td><strong>{param_name}</strong></td>
+                <td><strong>{display_name}</strong></td>
                 {format_cell(qwen_ff)}
                 {format_cell(qwen_tb)}
                 {format_cell(mistral_ff)}
