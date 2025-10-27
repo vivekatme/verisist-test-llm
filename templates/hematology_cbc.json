@@ -253,7 +253,7 @@
         {
           "parameterId": "CORRECTED_TLC",
           "displayName": "Corrected TLC",
-          "aliases": ["Corrected TLC", "Corrected Leucocyte Count", "CORRECTED TLC"],
+          "aliases": ["Corrected TLC", "Corrected Leucocyte Count", "CORRECTED TLC", "Corrected WBC"],
           "required": false,
           "unit": "cells/cu.mm",
           "dataType": "integer",
@@ -273,7 +273,7 @@
         {
           "parameterId": "NEUTROPHILS_ABSOLUTE",
           "displayName": "Neutrophils (Absolute)",
-          "aliases": ["Absolute Neutrophils", "ANC", "Neutrophil Count", "NEUTROPHILS"],
+          "aliases": ["Absolute Neutrophils", "ANC", "Neutrophil Count", "ABSOLUTE LEUCOCYTE COUNT - NEUTROPHILS", "NEUTROPHILS (ABSOLUTE)", "Absolute Neutrophil Count"],
           "required": true,
           "unit": "cells/cu.mm",
           "dataType": "decimal",
@@ -291,7 +291,7 @@
         {
           "parameterId": "LYMPHOCYTES_ABSOLUTE",
           "displayName": "Lymphocytes (Absolute)",
-          "aliases": ["Absolute Lymphocytes", "ALC", "Lymphocyte Count", "LYMPHOCYTES"],
+          "aliases": ["Absolute Lymphocytes", "ALC", "Lymphocyte Count", "ABSOLUTE LEUCOCYTE COUNT - LYMPHOCYTES", "LYMPHOCYTES (ABSOLUTE)", "Absolute Lymphocyte Count"],
           "required": true,
           "unit": "cells/cu.mm",
           "dataType": "decimal",
@@ -309,7 +309,7 @@
         {
           "parameterId": "EOSINOPHILS_ABSOLUTE",
           "displayName": "Eosinophils (Absolute)",
-          "aliases": ["Absolute Eosinophils", "AEC", "Eosinophil Count", "EOSINOPHILS"],
+          "aliases": ["Absolute Eosinophils", "AEC", "Eosinophil Count", "ABSOLUTE LEUCOCYTE COUNT - EOSINOPHILS", "EOSINOPHILS (ABSOLUTE)", "Absolute Eosinophil Count"],
           "required": true,
           "unit": "cells/cu.mm",
           "dataType": "decimal",
@@ -327,7 +327,7 @@
         {
           "parameterId": "MONOCYTES_ABSOLUTE",
           "displayName": "Monocytes (Absolute)",
-          "aliases": ["Absolute Monocytes", "AMC", "Monocyte Count", "MONOCYTES"],
+          "aliases": ["Absolute Monocytes", "AMC", "Monocyte Count", "ABSOLUTE LEUCOCYTE COUNT - MONOCYTES", "MONOCYTES (ABSOLUTE)", "Absolute Monocyte Count"],
           "required": true,
           "unit": "cells/cu.mm",
           "dataType": "decimal",
@@ -345,7 +345,7 @@
         {
           "parameterId": "NLR",
           "displayName": "Neutrophil-Lymphocyte Ratio",
-          "aliases": ["NLR", "N/L Ratio", "Neutrophil lymphocyte ratio", "Neutrophil lymphocyte ratio (NLR)"],
+          "aliases": ["NLR", "N/L Ratio", "Neutrophil lymphocyte ratio", "Neutrophil lymphocyte ratio (NLR)", "NEUTROPHIL LYMPHOCYTE RATIO (NLR)", "NEUTROPHIL LYMPHOCYTE RATIO"],
           "required": false,
           "unit": "",
           "dataType": "decimal",

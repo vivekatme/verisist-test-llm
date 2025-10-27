@@ -44,6 +44,12 @@ class TemplateExtractorV2:
 
         print(f"   ✅ Stage 1: Extracted {len(freeform_data.get('parameters', []))} parameters")
 
+        # Debug: Show ALL extracted parameter names
+        stage1_params = [p.get('name', '') for p in freeform_data.get('parameters', [])]
+        print(f"   📝 Stage 1 extracted {len(stage1_params)} parameter names:")
+        for i, name in enumerate(stage1_params, 1):
+            print(f"      {i:2d}. {name}")
+
         # Stage 2: Map to template
         print("   Stage 2: Mapping to template...")
         mapped_data = self._map_to_template(freeform_data, template)
@@ -61,12 +67,32 @@ class TemplateExtractorV2:
         """Generate free-form extraction prompt (no template constraints)"""
         test_name = template.get("displayName", "Medical Test")
 
+        # Get expected parameter names from template to guide extraction
+        expected_params = []
+        for section in template.get("sections", []):
+            for param in section.get("parameters", []):
+                param_id = param.get("parameterId", "")
+                display_name = param.get("displayName", "")
+                aliases = param.get("aliases", [])[:3]  # First 3 aliases
+
+                # Format: "HEMOGLOBIN (Haemoglobin, HB, Hgb)"
+                alias_str = ", ".join(aliases) if aliases else ""
+                if alias_str:
+                    expected_params.append(f"{param_id} ({alias_str})")
+                else:
+                    expected_params.append(param_id)
+
+        param_hint = "\n   - ".join(expected_params)
+
         return f"""Extract ALL test parameters from this {test_name} report.
+
+**EXPECTED PARAMETERS (use these names when possible):**
+   - {param_hint}
 
 **INSTRUCTIONS:**
 1. Find EVERY test parameter with its value
 2. For each parameter extract:
-   - Parameter name (as it appears in document)
+   - Parameter name: Use the expected parameter name above if you can identify it, otherwise use document name
    - Value (numeric or text)
    - Unit (if present)
    - Reference range min and max (if present)
@@ -85,14 +111,14 @@ class TemplateExtractorV2:
   }},
   "parameters": [
     {{
-      "name": "HAEMOGLOBIN",
+      "name": "HEMOGLOBIN",
       "value": 13.5,
       "unit": "g/dL",
       "refMin": 13.0,
       "refMax": 17.0
     }},
     {{
-      "name": "WBC COUNT",
+      "name": "WBC_COUNT",
       "value": 3680,
       "unit": "cells/cu.mm",
       "refMin": 4000,
@@ -103,6 +129,7 @@ class TemplateExtractorV2:
 
 **IMPORTANT:**
 - Extract EVERY parameter you find
+- Prefer using expected parameter names above for consistency
 - Include the reference range from the document if present
 - Return ONLY JSON, no markdown blocks
 
@@ -165,6 +192,69 @@ class TemplateExtractorV2:
         except:
             return None
 
+    def _calculate_match_score(self, extracted_name: str, param_id: str, display_name: str, aliases: List[str]) -> int:
+        """
+        Calculate match score between extracted name and template parameter.
+        Higher score = better match.
+
+        Scoring:
+        - 1000: Exact match (parameterId, displayName, or alias)
+        - 500+: Word-based match (score = 500 + number of matching words)
+        - 0: No match
+        """
+        ext_upper = extracted_name.upper().strip()
+
+        # Exact matches (highest priority)
+        if ext_upper == param_id.upper():
+            return 1000
+        if ext_upper == display_name.upper():
+            return 1000
+        if ext_upper in [a.upper() for a in aliases]:
+            return 1000
+
+        # Word-based fuzzy matching
+        # Tokenize: split on spaces, underscores, hyphens, parentheses
+        import re
+        ext_words = set(re.split(r'[\s_\-()]+', ext_upper))
+        ext_words = {w for w in ext_words if w}  # Remove empty strings
+
+        # Check against parameterId words
+        param_words = set(re.split(r'[\s_\-()]+', param_id.upper()))
+        param_words = {w for w in param_words if w}
+
+        # Check against display name words
+        display_words = set(re.split(r'[\s_\-()]+', display_name.upper()))
+        display_words = {w for w in display_words if w}
+
+        # Check against all aliases
+        max_word_match = 0
+        for alias in aliases:
+            alias_words = set(re.split(r'[\s_\-()]+', alias.upper()))
+            alias_words = {w for w in alias_words if w}
+
+            # Count matching words
+            common_words = ext_words & alias_words
+            if common_words:
+                # Score based on percentage of words matched
+                match_ratio = len(common_words) / max(len(ext_words), len(alias_words))
+                score = int(500 + match_ratio * 100 + len(common_words) * 10)
+                max_word_match = max(max_word_match, score)
+
+        # Also check parameterId and displayName word matching
+        common_param = ext_words & param_words
+        if common_param:
+            match_ratio = len(common_param) / max(len(ext_words), len(param_words))
+            score = int(500 + match_ratio * 100 + len(common_param) * 10)
+            max_word_match = max(max_word_match, score)
+
+        common_display = ext_words & display_words
+        if common_display:
+            match_ratio = len(common_display) / max(len(ext_words), len(display_words))
+            score = int(500 + match_ratio * 100 + len(common_display) * 10)
+            max_word_match = max(max_word_match, score)
+
+        return max_word_match
+
     def _map_to_template(self, freeform_data: Dict, template: Dict) -> Dict:
         """Map free-form extraction to template structure"""
         mapped = {
@@ -191,30 +281,32 @@ class TemplateExtractorV2:
         matched_by_section = {}
 
         for ext_param in extracted_params:
-            ext_name = ext_param.get("name", "").upper().strip()
+            ext_name = ext_param.get("name", "").strip()
 
-            # Try to find matching template parameter
+            # Find best matching template parameter using scoring
             best_match = None
             best_section_id = None
+            best_score = 0
 
             for section_id, section_data in template_sections.items():
                 for template_param in section_data["parameters"]:
-                    # Check if name matches parameter or aliases
+                    # Calculate match score
                     param_id = template_param.get("parameterId", "")
-                    display_name = template_param.get("displayName", "").upper()
-                    aliases = [a.upper() for a in template_param.get("aliases", [])]
+                    display_name = template_param.get("displayName", "")
+                    aliases = template_param.get("aliases", [])
 
-                    if (ext_name == param_id.upper() or
-                        ext_name == display_name or
-                        ext_name in aliases or
-                        any(alias in ext_name or ext_name in alias for alias in aliases)):
+                    score = self._calculate_match_score(ext_name, param_id, display_name, aliases)
 
+                    # Keep track of best match
+                    if score > best_score:
+                        best_score = score
                         best_match = template_param
                         best_section_id = section_id
-                        break
 
-                if best_match:
-                    break
+            # Only use matches with score >= 500 (at least some word overlap)
+            if best_score < 500:
+                best_match = None
+                best_section_id = None
 
             # If matched, add to appropriate section
             if best_match and best_section_id:

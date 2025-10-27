@@ -85,110 +85,6 @@ def extract_text_paddleocr(file_bytes: bytes) -> str:
         return "\n".join(page_text)
 
 
-def free_form_extraction(model_name: str, ocr_text: str) -> Dict:
-    """Free-form extraction without template constraints"""
-
-    prompt = f"""You are a medical data extraction assistant. Extract ALL test parameters from this lab report.
-
-For EVERY parameter you find, extract:
-- Parameter name (exactly as written in report)
-- Value (number)
-- Unit
-- Reference range (if present)
-
-Also extract patient metadata:
-- Patient name
-- Age
-- Gender
-- Collection date
-- Report date
-
-OCR Text:
-{ocr_text}
-
-Return ONLY a JSON object with this structure:
-{{
-  "patientName": "...",
-  "age": "...",
-  "gender": "...",
-  "collectionDate": "...",
-  "reportDate": "...",
-  "parameters": [
-    {{
-      "name": "EXACT_NAME_FROM_REPORT",
-      "value": 13.5,
-      "unit": "g/dL",
-      "referenceRange": "13-17"
-    }}
-  ]
-}}
-
-Extract ALL parameters you can find. Return ONLY the JSON, no markdown, no explanation.
-"""
-
-    try:
-        start_time = time.time()
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={
-                "model": model_name,
-                "prompt": prompt,
-                "stream": False
-            },
-            timeout=300
-        )
-
-        if response.status_code != 200:
-            return {
-                "success": False,
-                "error": f"HTTP {response.status_code}",
-                "timings": {"total": time.time() - start_time}
-            }
-
-        response_text = response.json().get("response", "")
-
-        # Clean up markdown if present
-        response_text = response_text.strip()
-        if response_text.startswith("```json"):
-            response_text = response_text[7:]
-        if response_text.startswith("```"):
-            response_text = response_text[3:]
-        if response_text.endswith("```"):
-            response_text = response_text[:-3]
-        response_text = response_text.strip()
-
-        # Parse JSON
-        data = json.loads(response_text)
-        elapsed = time.time() - start_time
-
-        # Convert to compatible format
-        param_count = len(data.get("parameters", []))
-
-        return {
-            "success": True,
-            "mode": "free_form",
-            "data": {
-                "documentMetadata": {
-                    "patientName": data.get("patientName"),
-                    "age": data.get("age"),
-                    "gender": data.get("gender"),
-                    "collectionDate": data.get("collectionDate"),
-                    "reportDate": data.get("reportDate")
-                },
-                "parameters": data.get("parameters", [])
-            },
-            "timings": {"total": elapsed},
-            "param_count": param_count
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "timings": {"total": time.time() - start_time}
-        }
-
-
 def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Path):
     """Generate HTML comparison dashboard"""
 
@@ -344,9 +240,7 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
         param_info = param_data.get(normalized_name, {})
         display_name = param_info.get('display_name', normalized_name)
 
-        qwen_ff = param_info.get('Qwen 2.5 7B (Free-Form)', {})
         qwen_tb = param_info.get('Qwen 2.5 7B (Template)', {})
-        mistral_ff = param_info.get('Mistral 7B (Free-Form)', {})
         mistral_tb = param_info.get('Mistral 7B (Template)', {})
 
         def format_cell(data):
@@ -356,6 +250,7 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             value = data.get('value', '')
             unit = data.get('unit', '')
             status = data.get('status', '')
+            ref_range = data.get('range', '')
 
             # Handle complex value types (list, dict, etc.)
             if isinstance(value, (list, dict)):
@@ -368,18 +263,29 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
             elif status == 'LOW':
                 bg_color = '#e6f3ff'
 
-            value_str = f"{value} {unit}".strip()
-            if status and status != 'NORMAL':
-                value_str += f" <span style='color: #c0392b; font-weight: bold;'>({status})</span>"
+            # Build value string with unit
+            value_str = f"<strong>{value} {unit}</strong>".strip()
 
-            return f'<td style="background: {bg_color};">{value_str}</td>'
+            # Add status badge
+            if status and status != 'NORMAL':
+                value_str += f"<br/><span style='color: #c0392b; font-weight: bold; font-size: 0.9em;'>({status})</span>"
+
+            # Add reference range if available
+            if ref_range:
+                if isinstance(ref_range, dict):
+                    ref_min = ref_range.get('min', '')
+                    ref_max = ref_range.get('max', '')
+                    if ref_min and ref_max:
+                        value_str += f"<br/><span style='color: #666; font-size: 0.85em;'>Ref: {ref_min}-{ref_max}</span>"
+                else:
+                    value_str += f"<br/><span style='color: #666; font-size: 0.85em;'>Ref: {ref_range}</span>"
+
+            return f'<td style="background: {bg_color}; padding: 12px;">{value_str}</td>'
 
         field_comparison_rows.append(f"""
             <tr>
                 <td><strong>{display_name}</strong></td>
-                {format_cell(qwen_ff)}
                 {format_cell(qwen_tb)}
-                {format_cell(mistral_ff)}
                 {format_cell(mistral_tb)}
             </tr>
         """)
@@ -577,10 +483,8 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
                     <thead>
                         <tr>
                             <th style="width: 25%;">Parameter</th>
-                            <th>Qwen 2.5 7B<br/>(Free-Form)</th>
-                            <th>Qwen 2.5 7B<br/>(Template)</th>
-                            <th>Mistral 7B<br/>(Free-Form)</th>
-                            <th>Mistral 7B<br/>(Template)</th>
+                            <th>Qwen 2.5 7B</th>
+                            <th>Mistral 7B</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -599,10 +503,11 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
                         <li>✅ Critical for 100% accuracy (vs 40-70% with Tesseract)</li>
                     </ul>
 
-                    <p style="margin-top: 20px;"><strong>2. Two-Stage LLM Extraction</strong></p>
+                    <p style="margin-top: 20px;"><strong>2. Template-Based LLM Extraction</strong></p>
                     <ul style="margin: 15px 0 15px 30px;">
-                        <li>✅ Stage 1: Free-form extraction (no constraints)</li>
-                        <li>✅ Stage 2: Python template mapping + validation</li>
+                        <li>✅ Stage 1: LLM extracts parameters guided by template schema</li>
+                        <li>✅ Stage 2: Python maps extracted data to normalized template structure</li>
+                        <li>✅ Result: Homogenized parameterIds for trend analysis</li>
                         <li>✅ ~160-170s per model</li>
                     </ul>
 
@@ -658,9 +563,9 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
     print(f"✅ Identified: {template.get('displayName')}")
     print(f"   Template: {template.get('templateId')}")
 
-    # Test all models with BOTH modes
+    # Test all models with template-based extraction
     print(f"\n{'=' * 80}")
-    print("STEP 3: Extraction - Free-Form AND Template-Based (All Models)")
+    print("STEP 3: Template-Based Extraction (All Models)")
     print('=' * 80)
 
     extractor = TemplateExtractorV2(tm)
@@ -671,45 +576,8 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
         print(f"Testing: {model_config['display']}")
         print('─' * 80)
 
-        # MODE 1: Free-Form Extraction (NO template)
-        print(f"   🔓 Mode 1: Free-Form (no template constraints)")
-        ff_result = free_form_extraction(model_config["name"], ocr_text)
-
-        if ff_result["success"]:
-            ff_count = ff_result["param_count"]
-            ff_time = ff_result["timings"]["total"]
-            print(f"      ✅ Extracted {ff_count} parameters in {ff_time:.2f}s")
-
-            all_results.append({
-                "success": True,
-                "mode": "free_form",
-                "model": model_config["name"],
-                "model_display": model_config["display"] + " (Free-Form)",
-                "file_path": file_path,
-                "template_id": "N/A",
-                "timings": {
-                    "ocr": ocr_time,
-                    "extraction": ff_time,
-                    "total": ff_time
-                },
-                "extraction": ff_result["data"],
-                "param_count": ff_count,
-                "timestamp": datetime.now().isoformat()
-            })
-        else:
-            print(f"      ❌ Failed: {ff_result.get('error')}")
-            all_results.append({
-                "success": False,
-                "mode": "free_form",
-                "model": model_config["name"],
-                "model_display": model_config["display"] + " (Free-Form)",
-                "error": ff_result.get("error"),
-                "file_path": file_path,
-                "timings": {"ocr": ocr_time}
-            })
-
-        # MODE 2: Template-Based Extraction
-        print(f"   📋 Mode 2: Template-Based (with template mapping)")
+        # Template-Based Extraction
+        print(f"   📋 Template-Based Extraction (with template mapping)")
         start_time = time.time()
 
         tb_result = extractor.extract_with_llm(
@@ -864,15 +732,9 @@ def process_single_file(file_path: str):
         for r in successful:
             model = r['model_display']
             time_val = f"{r['timings']['total']:.2f}s"
-            mode = r.get('mode', 'template_based')
-
-            if mode == 'free_form':
-                comp_val = 'N/A'
-                params = f"{r.get('param_count', 0)} params"
-            else:
-                comp = r['completeness']
-                comp_val = f"{comp['completenessScore']:.1f}%"
-                params = f"{comp['extractedParameters']}/{comp['totalParameters']}"
+            comp = r['completeness']
+            comp_val = f"{comp['completenessScore']:.1f}%"
+            params = f"{comp['extractedParameters']}/{comp['totalParameters']}"
 
             print(f"{model:<35} {time_val:<12} {comp_val:<15} {params:<15}")
 
