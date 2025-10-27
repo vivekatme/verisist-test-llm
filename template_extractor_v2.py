@@ -42,7 +42,23 @@ class TemplateExtractorV2:
         if not freeform_data:
             return {"success": False, "error": "Stage 1 JSON parsing failed", "stage": 1}
 
-        print(f"   ✅ Stage 1: Extracted {len(freeform_data.get('parameters', []))} parameters")
+        # Validate: Remove parameters not in template (safety net for LLMs that don't follow instructions)
+        expected_param_ids = set()
+        for section in template.get("sections", []):
+            for param in section.get("parameters", []):
+                expected_param_ids.add(param.get("parameterId", ""))
+
+        original_count = len(freeform_data.get('parameters', []))
+        freeform_data['parameters'] = [
+            p for p in freeform_data.get('parameters', [])
+            if p.get('name', '').upper() in {pid.upper() for pid in expected_param_ids}
+        ]
+        filtered_count = len(freeform_data.get('parameters', []))
+
+        if filtered_count < original_count:
+            print(f"   ⚠️  Filtered out {original_count - filtered_count} invalid parameter(s)")
+
+        print(f"   ✅ Stage 1: Extracted {filtered_count} parameters")
 
         # Debug: Show ALL extracted parameter names
         stage1_params = [p.get('name', '') for p in freeform_data.get('parameters', [])]
@@ -93,6 +109,20 @@ class TemplateExtractorV2:
    - Reference range min and max (if present)
 4. Also extract patient metadata
 5. DO NOT extract parameters not in the list above (e.g., if you see "BASOPHILS_ABSOLUTE" but it's not listed, skip it)
+
+**EXAMPLES - How to map document names to template names:**
+
+Document shows: "Haemoglobin: 13.5 g/dL (13.0-17.0)"
+Extract as: {{"name": "HEMOGLOBIN", "value": 13.5, "unit": "g/dL", "refMin": 13.0, "refMax": 17.0}}
+
+Document shows: "Platelets: 150000 /cu.mm"
+Extract as: {{"name": "PLATELET_COUNT", "value": 150000, "unit": "cells/cu.mm"}}
+
+Document shows: "Neutrophils: 60%"
+Extract as: {{"name": "NEUTROPHILS_PERCENT", "value": 60, "unit": "%"}}
+
+Document shows: "Basophils (Absolute): 20"
+SKIP IT - "BASOPHILS_ABSOLUTE" is NOT in the parameter list above!
 
 **OUTPUT FORMAT (JSON only, no markdown):**
 {{
@@ -145,7 +175,7 @@ class TemplateExtractorV2:
         payload = {
             "model": model_name,
             "prompt": prompt,
-            "system": "You are a medical document extraction AI. Extract data accurately and return only JSON.",
+            "system": "You are a precise medical data extraction system. Extract ONLY the exact parameters requested. Do not add extra parameters. Do not skip required parameters. Follow the parameter list exactly. Return only valid JSON.",
             "stream": False,
             "options": {"temperature": 0.1}
         }
