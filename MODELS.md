@@ -2,18 +2,17 @@
 
 ## Current Configuration
 
-### LLM Models (2 Best-Performing 7B Models)
+### LLM Model (Production-Ready)
 ```bash
 # Qwen 2.5 7B - Apache 2.0
-ollama pull qwen2.5:7b      # 4.7GB - Excellent accuracy, 100% completeness
-
-# Mistral 7B - Apache 2.0
-ollama pull mistral:7b      # 4.1GB - Excellent accuracy, 100% completeness
+ollama pull qwen2.5:7b      # 4.7GB - 100% completeness, excellent instruction following
 ```
 
 **Performance Results:**
-- **Qwen 2.5 7B**: 100% completeness, ~160s extraction time
-- **Mistral 7B**: 100% completeness, ~165s extraction time
+- **Qwen 2.5 7B**: 100% completeness (20/20 CBC parameters)
+- **Extraction Time**: ~85s per template
+- **Total Time**: ~112s (27s OCR + 85s extraction)
+- **Multi-Test**: ~130s for 2 tests (shared OCR)
 
 ### OCR Engine
 
@@ -45,6 +44,7 @@ pip install paddlepaddle paddleocr pdf2image
 ### Removed Models
 | Model | Reason |
 |-------|--------|
+| Mistral 7B | Unstable performance (85% → 30% regression with prompt changes), weaker instruction-following |
 | Qwen 2.5 3B | Only 10% completeness (insufficient for production) |
 | Meditron 7B | Outdated model, removed per user request |
 | BioMistral Q6_K | Model corruption - empty responses |
@@ -58,24 +58,28 @@ pip install paddlepaddle paddleocr pdf2image
 
 ---
 
-## Benchmark Matrix
+## System Architecture
 
-### Template-Based Extraction Benchmark
+### Multi-Template Extraction Pipeline
 
 **Configuration:**
-- **OCR Engine:** PaddleOCR (30s/document)
-- **LLM Models:** 2 (Qwen 2.5 7B, Mistral 7B)
-- **Modes:** 2 (extraction-only, validation+extraction)
-- **Total combinations:** 4 (2 models × 2 modes)
+- **OCR Engine:** PaddleOCR (27s/document)
+- **LLM Model:** Qwen 2.5 7B (85s per template)
+- **Multi-Test Support:** Automatic detection and extraction of multiple tests per document
+- **Timing Breakdown:** Detailed metrics for each stage
 
-**Modes:**
-1. **Extraction-only**: Direct parameter extraction from OCR text
-2. **Validation+extraction**: Two-stage approach with validation and mapping
+**Processing Stages:**
+1. **OCR Extraction** (~27s): PaddleOCR extracts text from all pages
+2. **Test Identification** (~0.05s): Keyword-based matching identifies ALL test types
+3. **Template Extraction** (~85s per test): Two-stage extraction for each identified template
+   - Stage 1: LLM free-form extraction (~84s)
+   - Stage 2: Python template mapping (~1s)
 
-**Expected Performance:**
-- **Total time per document:** ~190-200s (30s OCR + 160-170s LLM extraction)
-- **Completeness:** 100% for both 7B models
-- **Accuracy:** High (detects abnormal values, reference ranges)
+**Performance:**
+- **Single Test (CBC):** ~112s total (27s OCR + 0.05s ID + 85s extraction)
+- **Multi-Test (CBC + Dengue):** ~130s total (shared OCR + 2 extractions)
+- **Completeness:** 100% on all templates (CBC, Dengue, Lipid)
+- **Accuracy:** Detects abnormal values, reference ranges, critical flags
 
 ---
 
@@ -112,7 +116,7 @@ pip install paddlepaddle paddleocr pdf2image
 |-----------|---------|----------------|--------|
 | **PaddleOCR** | **Apache 2.0** | ✅ **Yes** | **Active** |
 | **Qwen 2.5 7B** | **Apache 2.0** | ✅ **Yes** | **Active** |
-| **Mistral 7B** | **Apache 2.0** | ✅ **Yes** | **Active** |
+| Mistral 7B | Apache 2.0 | - | Removed (unstable) |
 | Tesseract OCR | Apache 2.0 | - | Removed (poor layout) |
 | Qwen 2.5 3B | Apache 2.0 | - | Removed (low accuracy) |
 
@@ -128,14 +132,27 @@ All active components are **Apache 2.0 licensed** - fully permissive for commerc
 |--------|-----------|-----------|-------------|
 | **Layout Preservation** | Poor (40+ line gaps) | Excellent (adjacent lines) | Critical fix |
 | **Qwen 7B Completeness** | 40% | 100% | +60% |
-| **Mistral 7B Completeness** | 70% | 100% | +30% |
-| **Processing Time** | ~5s/page | ~30s/document | Acceptable tradeoff |
+| **Processing Time** | ~5s/page | ~27s/document | Acceptable tradeoff |
 
-### Model Performance (with PaddleOCR)
+### Current System Performance (PaddleOCR + Qwen 2.5 7B)
 
-| Model | Completeness | Extraction Time | Total Time | Abnormal Detection |
-|-------|--------------|-----------------|------------|-------------------|
-| Qwen 2.5 7B | 100% (20/20) | ~160s | ~190s | 6 abnormal findings |
-| Mistral 7B | 100% (20/20) | ~165s | ~195s | 5 abnormal findings |
+| Document Type | Tests | Completeness | Timing Breakdown | Total Time |
+|--------------|-------|--------------|------------------|------------|
+| **Single Test (CBC)** | 1 | 100% (20/20) | OCR: 27s + ID: 0.05s + Extract: 85s | ~112s |
+| **Multi-Test (CBC + Dengue)** | 2 | 100% (23/23) | OCR: 27s + ID: 0.05s + Extract: 98s (85s + 13s) | ~130s |
 
-**Conclusion:** Both 7B models achieve perfect extraction with PaddleOCR. Choose based on preference or speed requirements.
+**Timing Breakdown per Test:**
+- **OCR**: ~27s (shared across all tests)
+- **Identification**: ~0.05s (shared, detects all tests)
+- **Stage 1 (LLM)**: ~84s (CBC), ~12s (Dengue)
+- **Stage 2 (Mapping)**: ~1s per test
+- **Total**: 27s OCR + 0.05s ID + (85s × num_tests)
+
+**Key Features:**
+- ✅ Multi-template detection (automatically finds all tests in document)
+- ✅ 100% completeness on all templates (CBC, Dengue, Lipid)
+- ✅ Homogenized parameter IDs for trend analysis
+- ✅ Detailed timing metrics for performance optimization
+- ✅ Abnormal value detection with HIGH/LOW flags
+
+**Production Ready:** Single model (Qwen 2.5 7B) provides consistent 100% completeness with excellent instruction-following.
