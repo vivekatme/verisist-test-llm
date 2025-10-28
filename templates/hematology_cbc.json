@@ -249,18 +249,6 @@
             "high": 5
           },
           "methodology": "Flow cytometry"
-        },
-        {
-          "parameterId": "CORRECTED_TLC",
-          "displayName": "Corrected TLC",
-          "aliases": ["Corrected TLC", "Corrected Leucocyte Count", "CORRECTED TLC", "Corrected WBC"],
-          "required": false,
-          "unit": "cells/cu.mm",
-          "dataType": "integer",
-          "referenceRanges": {
-            "default": {"min": 4000, "max": 10000}
-          },
-          "methodology": "Calculated"
         }
       ]
     },
