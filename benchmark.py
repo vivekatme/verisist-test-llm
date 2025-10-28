@@ -239,7 +239,9 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
         param_info = param_data.get(normalized_name, {})
         display_name = param_info.get('display_name', normalized_name)
 
-        qwen_tb = param_info.get('Qwen 2.5 7B (Template)', {})
+        # Get the actual model name from successful results (use first result's model_display)
+        model_key = successful[0].get('model_display', 'Qwen 2.5 7B') if successful else 'Qwen 2.5 7B'
+        qwen_tb = param_info.get(model_key, {})
 
         def format_cell(data):
             if not data or data.get('value') is None:
@@ -475,12 +477,12 @@ def generate_html_dashboard(results: List[Dict], template: Dict, output_file: Pa
 
             <div class="section">
                 <h2 class="section-title">🔍 Field-by-Field Comparison</h2>
-                <p style="margin-bottom: 20px; color: #666;">Compare extracted values across all model/mode combinations for each parameter</p>
+                <p style="margin-bottom: 20px; color: #666;">Extracted values for each parameter</p>
                 <table>
                     <thead>
                         <tr>
                             <th style="width: 40%;">Parameter</th>
-                            <th>Qwen 2.5 7B (100% Completeness)</th>
+                            <th>{model_key}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -665,6 +667,7 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
                 "test_display_name": display_name,
                 "model": model_config["name"],
                 "model_display": model_config["display"],
+                "mode": "template_based",
                 "file_path": file_path,
                 "template_id": template.get("templateId"),
                 "timings": {
