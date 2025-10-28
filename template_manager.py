@@ -39,7 +39,8 @@ class TemplateManager:
                     template = json.load(f)
 
                 template_id = template.get("templateId")
-                test_type = template.get("testType")
+                # Support both "testType" (lab reports) and "documentType" (clinical/financial)
+                test_type = template.get("testType") or template.get("documentType")
 
                 if template_id and test_type:
                     self.templates[template_id] = template
@@ -69,10 +70,11 @@ class TemplateManager:
         for template in self.templates.values():
             result.append({
                 "templateId": template.get("templateId"),
-                "testType": template.get("testType"),
+                "testType": template.get("testType") or template.get("documentType"),
                 "displayName": template.get("displayName"),
-                "department": template.get("department"),
-                "version": template.get("version")
+                "category": template.get("category") or template.get("department"),
+                "version": template.get("version"),
+                "extractionType": template.get("extractionType", "PARAMETER_BASED")
             })
         return result
 
