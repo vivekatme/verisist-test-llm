@@ -253,6 +253,184 @@ class TemplateExtractorV2:
 
         return max_word_match
 
+    def _calculate_missing_formulas(self, mapped: Dict, template: Dict, matched_by_section: Dict):
+        """Calculate missing parameters using formulas"""
+        # Build a lookup of all extracted parameter IDs -> values
+        param_values = {}
+        for section in mapped["testResults"]["sections"]:
+            for param in section.get("parameters", []):
+                param_id = param.get("parameterId")
+                value = param.get("value")
+                if param_id and value is not None:
+                    param_values[param_id] = value
+
+        # For each template parameter with a formula
+        for section in template.get("sections", []):
+            section_id = section.get("sectionId")
+
+            for template_param in section.get("parameters", []):
+                param_id = template_param.get("parameterId")
+                formula = template_param.get("formula")
+
+                # Skip if no formula or already extracted
+                if not formula or param_id in param_values:
+                    continue
+
+                # Try to evaluate formula
+                try:
+                    # Replace parameter IDs in formula with their values
+                    eval_formula = formula
+                    for pid, pvalue in param_values.items():
+                        eval_formula = eval_formula.replace(pid, str(pvalue))
+
+                    # Evaluate the formula
+                    calculated_value = eval(eval_formula)
+
+                    # Get reference range from template
+                    ref_range = self.template_manager.get_reference_range(template_param)
+
+                    # Create parameter object
+                    param_obj = {
+                        "parameterId": param_id,
+                        "value": round(calculated_value, template_param.get("decimalPlaces", 2)),
+                        "unit": template_param.get("unit", ""),
+                        "referenceRange": ref_range,
+                        "referenceSource": "template"
+                    }
+
+                    # Calculate status
+                    if ref_range:
+                        try:
+                            status = self.template_manager.calculate_status(calculated_value, ref_range)
+                            param_obj["status"] = status
+
+                            flags = []
+                            if status == "HIGH":
+                                flags.append("HIGH")
+                            elif status == "LOW":
+                                flags.append("LOW")
+
+                            # Check critical values
+                            critical = template_param.get("criticalValues", {})
+                            if critical:
+                                if critical.get("low") and calculated_value < critical["low"]:
+                                    flags.append("CRITICAL_LOW")
+                                if critical.get("high") and calculated_value > critical["high"]:
+                                    flags.append("CRITICAL_HIGH")
+
+                            param_obj["flags"] = flags
+                        except:
+                            param_obj["status"] = "UNKNOWN"
+                            param_obj["flags"] = []
+                    else:
+                        param_obj["status"] = "UNKNOWN"
+                        param_obj["flags"] = []
+
+                    # Add to appropriate section
+                    for result_section in mapped["testResults"]["sections"]:
+                        if result_section["sectionId"] == section_id:
+                            result_section["parameters"].append(param_obj)
+                            break
+                    else:
+                        # Section doesn't exist, create it
+                        mapped["testResults"]["sections"].append({
+                            "sectionId": section_id,
+                            "parameters": [param_obj]
+                        })
+
+                    print(f"   ✅ Calculated {param_id} = {param_obj['value']} using formula: {formula}")
+
+                except Exception as e:
+                    # Formula evaluation failed (missing dependencies or invalid formula)
+                    pass
+
+        # Reverse formula calculation (e.g., if VLDL = TRIG/5, then TRIG = VLDL*5)
+        # Common patterns: A = B / C  =>  B = A * C
+        for section in template.get("sections", []):
+            section_id = section.get("sectionId")
+
+            for template_param in section.get("parameters", []):
+                param_id = template_param.get("parameterId")
+
+                # Skip if already extracted or calculated
+                if param_id in param_values:
+                    continue
+
+                # Check if any other parameter has a formula that uses this param
+                for other_section in template.get("sections", []):
+                    for other_param in other_section.get("parameters", []):
+                        other_id = other_param.get("parameterId")
+                        formula = other_param.get("formula")
+
+                        # If this parameter is used in another's formula
+                        if formula and param_id in formula and other_id in param_values:
+                            # Try to reverse calculate for simple division formulas
+                            # Pattern: other = param / divisor  =>  param = other * divisor
+                            if " / " in formula:
+                                parts = formula.split(" / ")
+                                if len(parts) == 2 and parts[0].strip() == param_id:
+                                    try:
+                                        divisor = float(parts[1].strip())
+                                        calculated_value = param_values[other_id] * divisor
+
+                                        # Get reference range from template
+                                        ref_range = self.template_manager.get_reference_range(template_param)
+
+                                        # Create parameter object
+                                        param_obj = {
+                                            "parameterId": param_id,
+                                            "value": round(calculated_value, template_param.get("decimalPlaces", 0)),
+                                            "unit": template_param.get("unit", ""),
+                                            "referenceRange": ref_range,
+                                            "referenceSource": "template"
+                                        }
+
+                                        # Calculate status
+                                        if ref_range:
+                                            try:
+                                                status = self.template_manager.calculate_status(calculated_value, ref_range)
+                                                param_obj["status"] = status
+
+                                                flags = []
+                                                if status == "HIGH":
+                                                    flags.append("HIGH")
+                                                elif status == "LOW":
+                                                    flags.append("LOW")
+
+                                                critical = template_param.get("criticalValues", {})
+                                                if critical:
+                                                    if critical.get("low") and calculated_value < critical["low"]:
+                                                        flags.append("CRITICAL_LOW")
+                                                    if critical.get("high") and calculated_value > critical["high"]:
+                                                        flags.append("CRITICAL_HIGH")
+
+                                                param_obj["flags"] = flags
+                                            except:
+                                                param_obj["status"] = "UNKNOWN"
+                                                param_obj["flags"] = []
+                                        else:
+                                            param_obj["status"] = "UNKNOWN"
+                                            param_obj["flags"] = []
+
+                                        # Add to appropriate section
+                                        for result_section in mapped["testResults"]["sections"]:
+                                            if result_section["sectionId"] == section_id:
+                                                result_section["parameters"].append(param_obj)
+                                                param_values[param_id] = calculated_value
+                                                break
+                                        else:
+                                            # Section doesn't exist, create it
+                                            mapped["testResults"]["sections"].append({
+                                                "sectionId": section_id,
+                                                "parameters": [param_obj]
+                                            })
+                                            param_values[param_id] = calculated_value
+
+                                        print(f"   ✅ Reverse-calculated {param_id} = {param_obj['value']} from {other_id} (formula: {formula})")
+
+                                    except Exception as e:
+                                        pass
+
     def _map_to_template(self, freeform_data: Dict, template: Dict) -> Dict:
         """Map free-form extraction to template structure"""
         mapped = {
@@ -392,6 +570,9 @@ class TemplateExtractorV2:
                 "sectionId": section_id,
                 "parameters": dedup_params
             })
+
+        # Formula-based calculation for missing parameters
+        self._calculate_missing_formulas(mapped, template, matched_by_section)
 
         return mapped
 

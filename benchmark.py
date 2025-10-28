@@ -685,6 +685,7 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
                 "totalParameters": total_template
             },
             "abnormal_count": abnormal,
+            "raw_stage1": tb_result.get("raw_stage1"),
             "timestamp": datetime.now().isoformat()
         })
 
