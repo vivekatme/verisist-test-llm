@@ -689,33 +689,56 @@ def process_document(file_path: str, output_dir: Path) -> Dict:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    # Save JSON
+    # Save JSON (combined - all tests)
     json_file = output_dir / f"results_{Path(file_path).stem}_{timestamp}.json"
     combined_data = {
         "benchmark_timestamp": datetime.now().isoformat(),
         "document": str(file_path),
-        "template_id": template.get("templateId"),
-        "test_type": test_type,
         "approach": "two_stage_v2",
         "models_tested": len(LLM_MODELS),
         "ocr_time": ocr_time,
+        "num_tests": len(all_tests),
         "results": all_results
     }
 
     with open(json_file, 'w') as f:
         json.dump(combined_data, f, indent=2)
 
-    # Generate HTML
-    html_file = output_dir / f"results_{Path(file_path).stem}_{timestamp}.html"
-    generate_html_dashboard(all_results, template, html_file)
+    # Generate separate HTML for each test type
+    html_files = []
+    results_by_test = {}
+
+    # Group results by test_type
+    for result in all_results:
+        test_type_key = result.get("test_type", "UNKNOWN")
+        if test_type_key not in results_by_test:
+            results_by_test[test_type_key] = []
+        results_by_test[test_type_key].append(result)
+
+    # Generate HTML for each test
+    for test_type_key, test_results in results_by_test.items():
+        # Get the template for this test type
+        test_template = None
+        for test_info in all_tests:
+            if test_info["test_type"] == test_type_key:
+                test_template = test_info["template"]
+                break
+
+        if test_template:
+            # Create HTML filename with test type
+            test_name_safe = test_type_key.lower().replace("_", "-")
+            html_file = output_dir / f"results_{Path(file_path).stem}_{test_name_safe}_{timestamp}.html"
+            generate_html_dashboard(test_results, test_template, html_file)
+            html_files.append(str(html_file))
+            print(f"✅ Saved HTML: {html_file.name}")
 
     return {
         "success": True,
         "file_path": file_path,
         "json_file": str(json_file),
-        "html_file": str(html_file),
+        "html_files": html_files,
         "results": all_results,
-        "template": template
+        "num_tests": len(all_tests)
     }
 
 
@@ -737,12 +760,12 @@ def find_pdf_files(directory: str) -> list:
 def process_single_file(file_path: str):
     """Process a single document"""
     print("\n" + "=" * 80)
-    print("  MEDICAL DOCUMENT EXTRACTION - COMPARISON TEST")
+    print("  MEDICAL DOCUMENT EXTRACTION - MULTI-TEST DETECTION")
     print("=" * 80)
     print(f"\n📄 Document: {Path(file_path).name}")
-    print(f"🤖 Models: {len(LLM_MODELS)} ({', '.join(m['display'] for m in LLM_MODELS)})")
-    print(f"🔬 Modes: 2 per model (Free-Form + Template-Based)")
-    print(f"📊 Total Tests: {len(LLM_MODELS) * 2} ({len(LLM_MODELS)} models × 2 modes)")
+    print(f"🤖 Model: {', '.join(m['display'] for m in LLM_MODELS)}")
+    print(f"🔬 Approach: Two-stage template-based extraction")
+    print(f"📊 Features: Multi-test detection + 100% completeness")
 
     output_dir = Path("results")
     result = process_document(file_path, output_dir)
@@ -760,10 +783,12 @@ def process_single_file(file_path: str):
     successful = [r for r in all_results if r.get("success")]
     failed = [r for r in all_results if not r.get("success")]
 
-    total_tests = len(LLM_MODELS) * 2  # 2 modes per model
-    print(f"\n✅ Successful: {len(successful)}/{total_tests}")
+    num_tests = result.get('num_tests', 1)
+    total_extractions = len(LLM_MODELS) * num_tests  # 1 model × N tests detected
+    print(f"\n✅ Tests Detected: {num_tests}")
+    print(f"✅ Successful Extractions: {len(successful)}/{total_extractions}")
     if failed:
-        print(f"❌ Failed: {len(failed)}/{total_tests}")
+        print(f"❌ Failed Extractions: {len(failed)}/{total_extractions}")
 
     if successful:
         print(f"\n📊 Performance Comparison:")
@@ -781,9 +806,11 @@ def process_single_file(file_path: str):
 
     print(f"\n💾 Results saved to:")
     print(f"   JSON: {result['json_file']}")
-    print(f"   HTML: {result['html_file']}")
-    print(f"\n🌐 Open HTML dashboard:")
-    print(f"   open {result['html_file']}")
+    for html_file in result.get('html_files', []):
+        print(f"   HTML: {html_file}")
+    print(f"\n🌐 Open HTML dashboards:")
+    for html_file in result.get('html_files', []):
+        print(f"   open {html_file}")
     print("=" * 80)
 
 
@@ -838,10 +865,13 @@ def process_batch(directory: str):
                     "file": file_path,
                     "status": "success",
                     "json_file": result['json_file'],
-                    "html_file": result['html_file'],
+                    "html_files": result['html_files'],
+                    "num_tests": result.get('num_tests', 1),
                     "timestamp": datetime.now().isoformat()
                 })
                 print(f"\n✅ Saved: {Path(result['json_file']).name}")
+                for html_file in result.get('html_files', []):
+                    print(f"   📄 HTML: {Path(html_file).name}")
             else:
                 batch_summary["results"].append({
                     "file": file_path,
