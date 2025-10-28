@@ -1,0 +1,276 @@
+{
+  "templateId": "CLINICAL_PRESCRIPTION_v1.0",
+  "documentType": "PRESCRIPTION",
+  "displayName": "Doctor Prescription",
+  "category": "CLINICAL",
+  "version": "1.0",
+  "description": "Medical prescription with medications, dosages, and instructions",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {
+      "sectionId": "PATIENT_INFO",
+      "sectionName": "Patient Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "PATIENT_NAME",
+          "displayName": "Patient Name",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["PATIENT", "NAME", "MR", "MRS", "PATIENT NAME"]
+        },
+        {
+          "fieldId": "PATIENT_AGE",
+          "displayName": "Age",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["AGE", "YRS", "YEARS", "Y"]
+        },
+        {
+          "fieldId": "PATIENT_GENDER",
+          "displayName": "Gender",
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["M", "F", "MALE", "FEMALE", "OTHER"],
+          "aliases": ["GENDER", "SEX"]
+        },
+        {
+          "fieldId": "PATIENT_CONTACT",
+          "displayName": "Contact Number",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["MOBILE", "PHONE", "CONTACT", "TEL"]
+        }
+      ]
+    },
+    {
+      "sectionId": "DOCTOR_INFO",
+      "sectionName": "Doctor Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "DOCTOR_NAME",
+          "displayName": "Doctor Name",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["DR", "DOCTOR", "CONSULTANT", "PHYSICIAN"]
+        },
+        {
+          "fieldId": "DOCTOR_QUALIFICATION",
+          "displayName": "Qualifications",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["MBBS", "MD", "MS", "QUALIFICATION", "DEGREE"]
+        },
+        {
+          "fieldId": "DOCTOR_REGISTRATION",
+          "displayName": "Registration Number",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["REG NO", "REGISTRATION", "LICENSE", "MCI"]
+        },
+        {
+          "fieldId": "DOCTOR_SPECIALTY",
+          "displayName": "Specialization",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["SPECIALTY", "SPECIALIZATION", "SPECIALIST"]
+        },
+        {
+          "fieldId": "CLINIC_NAME",
+          "displayName": "Clinic/Hospital Name",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["CLINIC", "HOSPITAL", "CENTER"]
+        }
+      ]
+    },
+    {
+      "sectionId": "VISIT_INFO",
+      "sectionName": "Visit Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "VISIT_DATE",
+          "displayName": "Date of Visit",
+          "dataType": "date",
+          "required": true,
+          "aliases": ["DATE", "DATED", "PRESCRIPTION DATE"]
+        },
+        {
+          "fieldId": "PRESCRIPTION_NUMBER",
+          "displayName": "Prescription Number",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["RX NO", "PRESCRIPTION NO", "REF NO"]
+        }
+      ]
+    },
+    {
+      "sectionId": "CLINICAL_INFO",
+      "sectionName": "Clinical Information",
+      "required": false,
+      "fields": [
+        {
+          "fieldId": "CHIEF_COMPLAINTS",
+          "displayName": "Chief Complaints",
+          "dataType": "list",
+          "required": false,
+          "aliases": ["COMPLAINTS", "PRESENTING COMPLAINTS", "C/O", "SYMPTOMS"]
+        },
+        {
+          "fieldId": "DIAGNOSIS",
+          "displayName": "Diagnosis",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["DIAGNOSIS", "PROVISIONAL DIAGNOSIS", "DX", "IMPRESSION"]
+        },
+        {
+          "fieldId": "VITALS",
+          "displayName": "Vital Signs",
+          "dataType": "object",
+          "required": false,
+          "subFields": [
+            {"name": "BP", "aliases": ["BP", "BLOOD PRESSURE"]},
+            {"name": "PULSE", "aliases": ["PULSE", "PR", "HEART RATE"]},
+            {"name": "TEMP", "aliases": ["TEMP", "TEMPERATURE"]},
+            {"name": "WEIGHT", "aliases": ["WT", "WEIGHT"]},
+            {"name": "SPO2", "aliases": ["SPO2", "OXYGEN SATURATION"]}
+          ]
+        }
+      ]
+    },
+    {
+      "sectionId": "MEDICATIONS",
+      "sectionName": "Medications",
+      "required": true,
+      "isList": true,
+      "description": "List of prescribed medications",
+      "itemSchema": {
+        "fields": [
+          {
+            "fieldId": "DRUG_NAME",
+            "displayName": "Medicine Name",
+            "dataType": "text",
+            "required": true,
+            "aliases": ["MEDICINE", "DRUG", "MEDICATION", "RX"]
+          },
+          {
+            "fieldId": "GENERIC_NAME",
+            "displayName": "Generic Name",
+            "dataType": "text",
+            "required": false,
+            "aliases": ["GENERIC", "SALT", "COMPOSITION"]
+          },
+          {
+            "fieldId": "DOSAGE",
+            "displayName": "Dosage",
+            "dataType": "text",
+            "required": true,
+            "aliases": ["DOSE", "STRENGTH"],
+            "examples": ["500mg", "1 tablet", "5ml", "10mg/ml"]
+          },
+          {
+            "fieldId": "FREQUENCY",
+            "displayName": "Frequency",
+            "dataType": "text",
+            "required": true,
+            "aliases": ["FREQUENCY", "TIMING"],
+            "examples": ["Once daily", "Twice daily", "Thrice daily", "1-0-1", "1-1-1", "SOS", "TDS", "BD", "OD", "QID"]
+          },
+          {
+            "fieldId": "DURATION",
+            "displayName": "Duration",
+            "dataType": "text",
+            "required": false,
+            "aliases": ["DAYS", "DURATION", "FOR"],
+            "examples": ["5 days", "7 days", "2 weeks", "1 month"]
+          },
+          {
+            "fieldId": "ROUTE",
+            "displayName": "Route",
+            "dataType": "text",
+            "required": false,
+            "expectedValues": ["ORAL", "TOPICAL", "IV", "IM", "SC", "INHALATION", "NASAL", "EYE DROPS", "EAR DROPS"],
+            "aliases": ["ROUTE", "ADMINISTRATION"]
+          },
+          {
+            "fieldId": "TIMING",
+            "displayName": "Timing",
+            "dataType": "text",
+            "required": false,
+            "expectedValues": ["BEFORE FOOD", "AFTER FOOD", "WITH FOOD", "EMPTY STOMACH", "MORNING", "NIGHT", "BEDTIME"],
+            "aliases": ["WHEN", "TIME"]
+          },
+          {
+            "fieldId": "INSTRUCTIONS",
+            "displayName": "Special Instructions",
+            "dataType": "text",
+            "required": false,
+            "aliases": ["INSTRUCTIONS", "REMARKS", "NOTE"]
+          }
+        ]
+      }
+    },
+    {
+      "sectionId": "INVESTIGATIONS",
+      "sectionName": "Investigations Advised",
+      "required": false,
+      "isList": true,
+      "description": "Lab tests or diagnostic procedures recommended",
+      "fields": [
+        {
+          "fieldId": "TEST_NAME",
+          "displayName": "Test Name",
+          "dataType": "list",
+          "required": false,
+          "aliases": ["INVESTIGATIONS", "TESTS", "LAB TESTS", "ADVISED"]
+        }
+      ]
+    },
+    {
+      "sectionId": "ADVICE",
+      "sectionName": "Doctor's Advice",
+      "required": false,
+      "fields": [
+        {
+          "fieldId": "GENERAL_ADVICE",
+          "displayName": "General Advice",
+          "dataType": "list",
+          "required": false,
+          "aliases": ["ADVICE", "INSTRUCTIONS", "RECOMMENDATIONS"]
+        },
+        {
+          "fieldId": "DIETARY_ADVICE",
+          "displayName": "Dietary Advice",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["DIET", "DIETARY", "FOOD"]
+        },
+        {
+          "fieldId": "FOLLOWUP",
+          "displayName": "Follow-up Instructions",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["FOLLOW UP", "FOLLOWUP", "REVIEW", "NEXT VISIT"]
+        },
+        {
+          "fieldId": "NEXT_VISIT_DATE",
+          "displayName": "Next Visit Date",
+          "dataType": "date",
+          "required": false,
+          "aliases": ["NEXT VISIT", "REVIEW DATE", "FOLLOW UP DATE"]
+        }
+      ]
+    }
+  ],
+  "validationRules": {
+    "minimumMedications": 1,
+    "requiredSections": ["PATIENT_INFO", "DOCTOR_INFO", "VISIT_INFO", "MEDICATIONS"]
+  },
+  "outputFormat": {
+    "type": "STRUCTURED_DOCUMENT",
+    "includeMetadata": true,
+    "generateSummary": true
+  }
+}

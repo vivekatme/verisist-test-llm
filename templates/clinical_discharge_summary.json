@@ -1,0 +1,59 @@
+{
+  "templateId": "CLINICAL_DISCHARGE_SUMMARY_v1.0",
+  "documentType": "DISCHARGE_SUMMARY",
+  "displayName": "Discharge Summary",
+  "category": "CLINICAL",
+  "version": "1.0",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {
+      "sectionId": "PATIENT_INFO",
+      "sectionName": "Patient Information",
+      "fields": [
+        {"fieldId": "PATIENT_NAME", "displayName": "Patient Name", "dataType": "text", "required": true},
+        {"fieldId": "AGE", "displayName": "Age", "dataType": "text", "required": true},
+        {"fieldId": "GENDER", "displayName": "Gender", "dataType": "text", "required": true},
+        {"fieldId": "UHID", "displayName": "UHID", "dataType": "text", "required": false}
+      ]
+    },
+    {
+      "sectionId": "ADMISSION_INFO",
+      "sectionName": "Admission Details",
+      "fields": [
+        {"fieldId": "ADMISSION_DATE", "displayName": "Admission Date", "dataType": "date", "required": true},
+        {"fieldId": "DISCHARGE_DATE", "displayName": "Discharge Date", "dataType": "date", "required": true},
+        {"fieldId": "LENGTH_OF_STAY", "displayName": "Length of Stay", "dataType": "text", "required": false}
+      ]
+    },
+    {
+      "sectionId": "CLINICAL_INFO",
+      "sectionName": "Clinical Information",
+      "fields": [
+        {"fieldId": "CHIEF_COMPLAINTS", "displayName": "Chief Complaints", "dataType": "text", "required": false},
+        {"fieldId": "DIAGNOSIS", "displayName": "Final Diagnosis", "dataType": "text", "required": true},
+        {"fieldId": "PROCEDURE_DONE", "displayName": "Procedures Performed", "dataType": "text", "required": false},
+        {"fieldId": "TREATMENT_GIVEN", "displayName": "Treatment Given", "dataType": "text", "required": false}
+      ]
+    },
+    {
+      "sectionId": "DISCHARGE_MEDICATIONS",
+      "sectionName": "Medications at Discharge",
+      "isList": true,
+      "itemSchema": {
+        "fields": [
+          {"fieldId": "DRUG_NAME", "displayName": "Medicine", "dataType": "text", "required": true},
+          {"fieldId": "DOSAGE", "displayName": "Dosage", "dataType": "text", "required": true},
+          {"fieldId": "FREQUENCY", "displayName": "Frequency", "dataType": "text", "required": true}
+        ]
+      }
+    },
+    {
+      "sectionId": "FOLLOW_UP",
+      "sectionName": "Follow-up Instructions",
+      "fields": [
+        {"fieldId": "ADVICE", "displayName": "Discharge Advice", "dataType": "text", "required": false},
+        {"fieldId": "FOLLOWUP_DATE", "displayName": "Follow-up Date", "dataType": "date", "required": false}
+      ]
+    }
+  ]
+}

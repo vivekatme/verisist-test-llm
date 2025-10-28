@@ -1,0 +1,324 @@
+{
+  "templateId": "FINANCIAL_HOSPITAL_BILL_v1.0",
+  "documentType": "HOSPITAL_BILL",
+  "displayName": "Hospital Bill / Invoice",
+  "category": "FINANCIAL",
+  "version": "1.0",
+  "description": "Hospital or clinic bill with itemized charges",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {
+      "sectionId": "BILL_INFO",
+      "sectionName": "Bill Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "BILL_NUMBER",
+          "displayName": "Bill/Invoice Number",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["BILL NO", "INVOICE NO", "RECEIPT NO", "BILL NUMBER", "INV NO"]
+        },
+        {
+          "fieldId": "BILL_DATE",
+          "displayName": "Bill Date",
+          "dataType": "date",
+          "required": true,
+          "aliases": ["DATE", "BILL DATE", "INVOICE DATE"]
+        },
+        {
+          "fieldId": "BILL_TYPE",
+          "displayName": "Bill Type",
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["OPD", "IPD", "EMERGENCY", "DAYCARE", "CONSULTATION"],
+          "aliases": ["TYPE", "CATEGORY"]
+        }
+      ]
+    },
+    {
+      "sectionId": "PATIENT_INFO",
+      "sectionName": "Patient Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "PATIENT_NAME",
+          "displayName": "Patient Name",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["PATIENT", "NAME", "PATIENT NAME"]
+        },
+        {
+          "fieldId": "PATIENT_ID",
+          "displayName": "Patient ID/UHID",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["PATIENT ID", "UHID", "MR NO", "REGISTRATION NO"]
+        },
+        {
+          "fieldId": "PATIENT_AGE",
+          "displayName": "Age",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["AGE"]
+        },
+        {
+          "fieldId": "PATIENT_GENDER",
+          "displayName": "Gender",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["GENDER", "SEX"]
+        }
+      ]
+    },
+    {
+      "sectionId": "HOSPITAL_INFO",
+      "sectionName": "Hospital/Clinic Information",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "HOSPITAL_NAME",
+          "displayName": "Hospital/Clinic Name",
+          "dataType": "text",
+          "required": true,
+          "aliases": ["HOSPITAL", "CLINIC", "FACILITY"]
+        },
+        {
+          "fieldId": "HOSPITAL_ADDRESS",
+          "displayName": "Address",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["ADDRESS", "LOCATION"]
+        },
+        {
+          "fieldId": "HOSPITAL_CONTACT",
+          "displayName": "Contact Number",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["PHONE", "CONTACT", "MOBILE"]
+        },
+        {
+          "fieldId": "GSTIN",
+          "displayName": "GSTIN",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["GSTIN", "GST NO", "TAX ID"]
+        }
+      ]
+    },
+    {
+      "sectionId": "ADMISSION_INFO",
+      "sectionName": "Admission Information",
+      "required": false,
+      "description": "For IPD bills",
+      "fields": [
+        {
+          "fieldId": "ADMISSION_DATE",
+          "displayName": "Admission Date",
+          "dataType": "date",
+          "required": false,
+          "aliases": ["ADMITTED ON", "ADMISSION DATE", "DOA"]
+        },
+        {
+          "fieldId": "DISCHARGE_DATE",
+          "displayName": "Discharge Date",
+          "dataType": "date",
+          "required": false,
+          "aliases": ["DISCHARGED ON", "DISCHARGE DATE", "DOD"]
+        },
+        {
+          "fieldId": "ROOM_TYPE",
+          "displayName": "Room Type",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["ROOM", "WARD", "BED TYPE"],
+          "expectedValues": ["GENERAL", "SEMI-PRIVATE", "PRIVATE", "DELUXE", "ICU", "NICU", "PICU"]
+        }
+      ]
+    },
+    {
+      "sectionId": "ITEMIZED_CHARGES",
+      "sectionName": "Itemized Charges",
+      "required": true,
+      "isList": true,
+      "description": "Line items with individual charges",
+      "itemSchema": {
+        "fields": [
+          {
+            "fieldId": "ITEM_DESCRIPTION",
+            "displayName": "Item/Service Description",
+            "dataType": "text",
+            "required": true,
+            "aliases": ["DESCRIPTION", "PARTICULARS", "SERVICE", "ITEM"]
+          },
+          {
+            "fieldId": "ITEM_QUANTITY",
+            "displayName": "Quantity",
+            "dataType": "numeric",
+            "required": false,
+            "aliases": ["QTY", "QUANTITY", "UNITS"]
+          },
+          {
+            "fieldId": "ITEM_RATE",
+            "displayName": "Rate/Unit Price",
+            "dataType": "currency",
+            "required": false,
+            "aliases": ["RATE", "UNIT PRICE", "PRICE"]
+          },
+          {
+            "fieldId": "ITEM_AMOUNT",
+            "displayName": "Amount",
+            "dataType": "currency",
+            "required": true,
+            "aliases": ["AMOUNT", "TOTAL", "COST"]
+          }
+        ]
+      }
+    },
+    {
+      "sectionId": "CATEGORY_TOTALS",
+      "sectionName": "Category-wise Totals",
+      "required": false,
+      "description": "Charges grouped by category",
+      "fields": [
+        {
+          "fieldId": "CONSULTATION_CHARGES",
+          "displayName": "Consultation Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["CONSULTATION", "DOCTOR FEES", "VISIT CHARGES"]
+        },
+        {
+          "fieldId": "INVESTIGATION_CHARGES",
+          "displayName": "Investigation/Lab Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["INVESTIGATIONS", "LAB CHARGES", "TESTS"]
+        },
+        {
+          "fieldId": "PHARMACY_CHARGES",
+          "displayName": "Pharmacy/Medicine Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["PHARMACY", "MEDICINE", "DRUGS"]
+        },
+        {
+          "fieldId": "PROCEDURE_CHARGES",
+          "displayName": "Procedure Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["PROCEDURES", "SURGERY", "OPERATION"]
+        },
+        {
+          "fieldId": "ROOM_CHARGES",
+          "displayName": "Room/Bed Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["ROOM", "BED CHARGES", "ACCOMMODATION"]
+        },
+        {
+          "fieldId": "NURSING_CHARGES",
+          "displayName": "Nursing Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["NURSING", "NURSING CARE"]
+        },
+        {
+          "fieldId": "MISCELLANEOUS_CHARGES",
+          "displayName": "Miscellaneous Charges",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["MISC", "MISCELLANEOUS", "OTHER"]
+        }
+      ]
+    },
+    {
+      "sectionId": "TOTALS",
+      "sectionName": "Bill Totals",
+      "required": true,
+      "fields": [
+        {
+          "fieldId": "SUBTOTAL",
+          "displayName": "Subtotal",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["SUBTOTAL", "SUB TOTAL", "GROSS AMOUNT"]
+        },
+        {
+          "fieldId": "TAX_AMOUNT",
+          "displayName": "Tax Amount (GST/VAT)",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["TAX", "GST", "VAT", "TAX AMOUNT"]
+        },
+        {
+          "fieldId": "DISCOUNT",
+          "displayName": "Discount",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["DISCOUNT", "CONCESSION", "WAIVER"]
+        },
+        {
+          "fieldId": "TOTAL_AMOUNT",
+          "displayName": "Total Amount",
+          "dataType": "currency",
+          "required": true,
+          "aliases": ["TOTAL", "GRAND TOTAL", "NET AMOUNT", "AMOUNT PAYABLE"]
+        },
+        {
+          "fieldId": "AMOUNT_PAID",
+          "displayName": "Amount Paid",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["PAID", "AMOUNT PAID", "RECEIVED"]
+        },
+        {
+          "fieldId": "BALANCE_DUE",
+          "displayName": "Balance Due",
+          "dataType": "currency",
+          "required": false,
+          "aliases": ["BALANCE", "DUE", "OUTSTANDING"]
+        }
+      ]
+    },
+    {
+      "sectionId": "PAYMENT_INFO",
+      "sectionName": "Payment Information",
+      "required": false,
+      "fields": [
+        {
+          "fieldId": "PAYMENT_METHOD",
+          "displayName": "Payment Method",
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["CASH", "CARD", "UPI", "NET BANKING", "CHEQUE", "INSURANCE"],
+          "aliases": ["PAYMENT MODE", "MODE OF PAYMENT"]
+        },
+        {
+          "fieldId": "PAYMENT_STATUS",
+          "displayName": "Payment Status",
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["PAID", "PARTIAL", "UNPAID", "PENDING"],
+          "aliases": ["STATUS", "PAYMENT STATUS"]
+        },
+        {
+          "fieldId": "TRANSACTION_ID",
+          "displayName": "Transaction ID",
+          "dataType": "text",
+          "required": false,
+          "aliases": ["TRANSACTION", "TXN ID", "REFERENCE NO"]
+        }
+      ]
+    }
+  ],
+  "validationRules": {
+    "requiredSections": ["BILL_INFO", "PATIENT_INFO", "HOSPITAL_INFO", "ITEMIZED_CHARGES", "TOTALS"],
+    "minimumLineItems": 1
+  },
+  "outputFormat": {
+    "type": "STRUCTURED_DOCUMENT",
+    "includeMetadata": true,
+    "generateSummary": true
+  }
+}

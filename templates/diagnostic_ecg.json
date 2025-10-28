@@ -1,0 +1,14 @@
+{
+  "templateId": "DIAGNOSTIC_ECG_v1.0",
+  "documentType": "ECG_REPORT",
+  "displayName": "ECG Report",
+  "category": "DIAGNOSTIC",
+  "version": "1.0",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {"sectionId": "PATIENT_INFO", "fields": [{"fieldId": "PATIENT_NAME", "displayName": "Patient Name", "dataType": "text", "required": true}, {"fieldId": "AGE", "displayName": "Age", "dataType": "text", "required": true}, {"fieldId": "GENDER", "displayName": "Gender", "dataType": "text", "required": true}]},
+    {"sectionId": "ECG_PARAMETERS", "fields": [{"fieldId": "HEART_RATE", "displayName": "Heart Rate", "dataType": "numeric", "unit": "bpm", "required": true}, {"fieldId": "PR_INTERVAL", "displayName": "PR Interval", "dataType": "numeric", "unit": "ms", "required": false}, {"fieldId": "QRS_DURATION", "displayName": "QRS Duration", "dataType": "numeric", "unit": "ms", "required": false}, {"fieldId": "QT_INTERVAL", "displayName": "QT Interval", "dataType": "numeric", "unit": "ms", "required": false}, {"fieldId": "QTC_INTERVAL", "displayName": "QTc Interval", "dataType": "numeric", "unit": "ms", "required": false}, {"fieldId": "RHYTHM", "displayName": "Rhythm", "dataType": "text", "required": true}, {"fieldId": "AXIS", "displayName": "Axis", "dataType": "text", "required": false}]},
+    {"sectionId": "INTERPRETATION", "fields": [{"fieldId": "IMPRESSION", "displayName": "Impression/Interpretation", "dataType": "text", "required": true}]},
+    {"sectionId": "DOCTOR_INFO", "fields": [{"fieldId": "CARDIOLOGIST_NAME", "displayName": "Cardiologist Name", "dataType": "text", "required": false}]}
+  ]
+}

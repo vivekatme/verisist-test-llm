@@ -1,0 +1,12 @@
+{
+  "templateId": "ADMIN_VACCINATION_CERTIFICATE_v1.0",
+  "documentType": "VACCINATION_CERTIFICATE",
+  "displayName": "Vaccination Certificate",
+  "category": "ADMINISTRATIVE",
+  "version": "1.0",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {"sectionId": "PATIENT_INFO", "fields": [{"fieldId": "NAME", "displayName": "Name", "dataType": "text", "required": true}, {"fieldId": "AGE", "displayName": "Age", "dataType": "text", "required": false}, {"fieldId": "ID_NUMBER", "displayName": "ID Number", "dataType": "text", "required": false}]},
+    {"sectionId": "VACCINATION_DETAILS", "isList": true, "itemSchema": {"fields": [{"fieldId": "VACCINE_NAME", "displayName": "Vaccine Name", "dataType": "text", "required": true}, {"fieldId": "DOSE_NUMBER", "displayName": "Dose Number", "dataType": "text", "required": false}, {"fieldId": "DATE", "displayName": "Vaccination Date", "dataType": "date", "required": true}, {"fieldId": "BATCH_NUMBER", "displayName": "Batch Number", "dataType": "text", "required": false}, {"fieldId": "CENTER", "displayName": "Vaccination Center", "dataType": "text", "required": false}]}}
+  ]
+}

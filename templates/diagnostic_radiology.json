@@ -1,0 +1,14 @@
+{
+  "templateId": "DIAGNOSTIC_RADIOLOGY_v1.0",
+  "documentType": "XRAY_REPORT",
+  "displayName": "X-Ray / Radiology Report",
+  "category": "DIAGNOSTIC",
+  "version": "1.0",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {"sectionId": "PATIENT_INFO", "fields": [{"fieldId": "PATIENT_NAME", "displayName": "Patient Name", "dataType": "text", "required": true}, {"fieldId": "AGE", "displayName": "Age", "dataType": "text", "required": true}, {"fieldId": "GENDER", "displayName": "Gender", "dataType": "text", "required": true}]},
+    {"sectionId": "STUDY_INFO", "fields": [{"fieldId": "STUDY_TYPE", "displayName": "Study Type", "dataType": "text", "required": true, "examples": ["CHEST X-RAY PA VIEW", "SKULL X-RAY", "ABDOMEN X-RAY"]}, {"fieldId": "STUDY_DATE", "displayName": "Study Date", "dataType": "date", "required": true}, {"fieldId": "CLINICAL_INDICATION", "displayName": "Clinical Indication", "dataType": "text", "required": false}]},
+    {"sectionId": "FINDINGS", "fields": [{"fieldId": "TECHNIQUE", "displayName": "Technique", "dataType": "text", "required": false}, {"fieldId": "FINDINGS", "displayName": "Findings", "dataType": "text", "required": true}, {"fieldId": "IMPRESSION", "displayName": "Impression/Conclusion", "dataType": "text", "required": true}]},
+    {"sectionId": "DOCTOR_INFO", "fields": [{"fieldId": "RADIOLOGIST_NAME", "displayName": "Radiologist Name", "dataType": "text", "required": false}]}
+  ]
+}

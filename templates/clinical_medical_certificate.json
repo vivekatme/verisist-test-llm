@@ -1,0 +1,25 @@
+{
+  "templateId": "CLINICAL_MEDICAL_CERTIFICATE_v1.0",
+  "documentType": "MEDICAL_CERTIFICATE",
+  "displayName": "Medical Certificate / Sick Leave",
+  "category": "CLINICAL",
+  "version": "1.0",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {"sectionId": "PATIENT_INFO", "fields": [
+      {"fieldId": "PATIENT_NAME", "displayName": "Patient Name", "dataType": "text", "required": true},
+      {"fieldId": "AGE", "displayName": "Age", "dataType": "text", "required": false}
+    ]},
+    {"sectionId": "CERTIFICATE_INFO", "fields": [
+      {"fieldId": "ISSUE_DATE", "displayName": "Issue Date", "dataType": "date", "required": true},
+      {"fieldId": "LEAVE_FROM", "displayName": "Leave From Date", "dataType": "date", "required": true},
+      {"fieldId": "LEAVE_TO", "displayName": "Leave To Date", "dataType": "date", "required": true},
+      {"fieldId": "DAYS_OF_LEAVE", "displayName": "Number of Days", "dataType": "numeric", "required": false},
+      {"fieldId": "DIAGNOSIS", "displayName": "Diagnosis/Reason", "dataType": "text", "required": false}
+    ]},
+    {"sectionId": "DOCTOR_INFO", "fields": [
+      {"fieldId": "DOCTOR_NAME", "displayName": "Doctor Name", "dataType": "text", "required": true},
+      {"fieldId": "REGISTRATION_NO", "displayName": "Registration Number", "dataType": "text", "required": false}
+    ]}
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "templateId": "FINANCIAL_PHARMACY_BILL_v1.0",
+  "documentType": "PHARMACY_BILL",
+  "displayName": "Pharmacy Bill",
+  "category": "FINANCIAL",
+  "version": "1.0",
+  "description": "Pharmacy or medical store bill for medicines purchased",
+  "extractionType": "DOCUMENT_BASED",
+  "sections": [
+    {
+      "sectionId": "BILL_INFO",
+      "sectionName": "Bill Information",
+      "required": true,
+      "fields": [
+        {"fieldId": "BILL_NUMBER", "displayName": "Bill Number", "dataType": "text", "required": true, "aliases": ["BILL NO", "INVOICE NO"]},
+        {"fieldId": "BILL_DATE", "displayName": "Bill Date", "dataType": "date", "required": true, "aliases": ["DATE", "BILL DATE"]}
+      ]
+    },
+    {
+      "sectionId": "PHARMACY_INFO",
+      "sectionName": "Pharmacy Information",
+      "required": true,
+      "fields": [
+        {"fieldId": "PHARMACY_NAME", "displayName": "Pharmacy Name", "dataType": "text", "required": true, "aliases": ["PHARMACY", "STORE NAME"]},
+        {"fieldId": "PHARMACY_ADDRESS", "displayName": "Address", "dataType": "text", "required": false, "aliases": ["ADDRESS"]},
+        {"fieldId": "PHARMACY_LICENSE", "displayName": "Drug License Number", "dataType": "text", "required": false, "aliases": ["DL NO", "LICENSE"]},
+        {"fieldId": "GSTIN", "displayName": "GSTIN", "dataType": "text", "required": false, "aliases": ["GSTIN", "GST NO"]}
+      ]
+    },
+    {
+      "sectionId": "CUSTOMER_INFO",
+      "sectionName": "Customer Information",
+      "required": false,
+      "fields": [
+        {"fieldId": "CUSTOMER_NAME", "displayName": "Customer Name", "dataType": "text", "required": false, "aliases": ["NAME", "PATIENT NAME"]},
+        {"fieldId": "DOCTOR_NAME", "displayName": "Doctor Name", "dataType": "text", "required": false, "aliases": ["DOCTOR", "PRESCRIBED BY"]}
+      ]
+    },
+    {
+      "sectionId": "MEDICINES",
+      "sectionName": "Medicine Items",
+      "required": true,
+      "isList": true,
+      "itemSchema": {
+        "fields": [
+          {"fieldId": "MEDICINE_NAME", "displayName": "Medicine Name", "dataType": "text", "required": true, "aliases": ["MEDICINE", "DRUG", "ITEM"]},
+          {"fieldId": "BATCH_NUMBER", "displayName": "Batch Number", "dataType": "text", "required": false, "aliases": ["BATCH", "BATCH NO"]},
+          {"fieldId": "EXPIRY_DATE", "displayName": "Expiry Date", "dataType": "date", "required": false, "aliases": ["EXPIRY", "EXP DATE"]},
+          {"fieldId": "QUANTITY", "displayName": "Quantity", "dataType": "numeric", "required": true, "aliases": ["QTY", "QUANTITY"]},
+          {"fieldId": "MRP", "displayName": "MRP", "dataType": "currency", "required": false, "aliases": ["MRP", "MAX RETAIL PRICE"]},
+          {"fieldId": "DISCOUNT", "displayName": "Discount", "dataType": "currency", "required": false, "aliases": ["DISC", "DISCOUNT"]},
+          {"fieldId": "AMOUNT", "displayName": "Amount", "dataType": "currency", "required": true, "aliases": ["AMOUNT", "TOTAL"]}
+        ]
+      }
+    },
+    {
+      "sectionId": "TOTALS",
+      "sectionName": "Bill Totals",
+      "required": true,
+      "fields": [
+        {"fieldId": "TOTAL_ITEMS", "displayName": "Total Items", "dataType": "numeric", "required": false, "aliases": ["ITEMS", "TOTAL ITEMS"]},
+        {"fieldId": "SUBTOTAL", "displayName": "Subtotal", "dataType": "currency", "required": false, "aliases": ["SUBTOTAL"]},
+        {"fieldId": "TAX_AMOUNT", "displayName": "Tax Amount", "dataType": "currency", "required": false, "aliases": ["TAX", "GST"]},
+        {"fieldId": "TOTAL_DISCOUNT", "displayName": "Total Discount", "dataType": "currency", "required": false, "aliases": ["DISCOUNT"]},
+        {"fieldId": "TOTAL_AMOUNT", "displayName": "Total Amount", "dataType": "currency", "required": true, "aliases": ["TOTAL", "NET AMOUNT", "PAYABLE"]},
+        {"fieldId": "ROUNDED_OFF", "displayName": "Rounded Off", "dataType": "currency", "required": false, "aliases": ["ROUND OFF"]}
+      ]
+    },
+    {
+      "sectionId": "PAYMENT_INFO",
+      "sectionName": "Payment Information",
+      "required": false,
+      "fields": [
+        {"fieldId": "PAYMENT_METHOD", "displayName": "Payment Method", "dataType": "text", "required": false, "expectedValues": ["CASH", "CARD", "UPI"], "aliases": ["PAYMENT MODE"]}
+      ]
+    }
+  ]
+}
