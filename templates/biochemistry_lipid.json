@@ -146,7 +146,7 @@
         {
           "parameterId": "TC_HDL_RATIO",
           "displayName": "Total Cholesterol / HDL Ratio",
-          "aliases": ["TC/HDL", "Cholesterol Ratio", "Cardiac Risk Ratio", "TC/HDL RATIO"],
+          "aliases": ["TC/HDL", "Cholesterol Ratio", "Cardiac Risk Ratio", "TC/HDL RATIO", "TC_HDL_RATIO", "TC HDL RATIO", "TOTAL CHOLESTEROL/HDL RATIO"],
           "required": false,
           "unit": "",
           "dataType": "decimal",
@@ -169,7 +169,7 @@
         {
           "parameterId": "LDL_HDL_RATIO",
           "displayName": "LDL / HDL Ratio",
-          "aliases": ["LDL/HDL", "Atherogenic Index", "LDL/HDL RATIO"],
+          "aliases": ["LDL/HDL", "Atherogenic Index", "LDL/HDL RATIO", "LDL_HDL_RATIO", "LDL HDL RATIO", "LDL CHOLESTEROL/HDL RATIO"],
           "required": false,
           "unit": "",
           "dataType": "decimal",
@@ -187,7 +187,7 @@
         {
           "parameterId": "NON_HDL_CHOLESTEROL",
           "displayName": "Non-HDL Cholesterol",
-          "aliases": ["Non-HDL", "Non HDL Cholesterol", "NON-HDL CHOLESTEROL"],
+          "aliases": ["Non-HDL", "Non HDL Cholesterol", "NON-HDL CHOLESTEROL", "NON_HDL_CHOLESTEROL", "NON HDL", "NONHDL CHOLESTEROL"],
           "required": false,
           "unit": "mg/dL",
           "dataType": "integer",
