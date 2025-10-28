@@ -123,6 +123,74 @@ class TemplateManager:
                 if re.search(r'\b(LIPID|CHOLESTEROL|HDL|LDL|TRIGLYCERIDE)\b', ocr_text_upper):
                     score += 15
 
+            elif test_type == "LIVER_FUNCTION_TEST":
+                if re.search(r'\b(LFT|LIVER FUNCTION|SGOT|SGPT|ALT|AST|BILIRUBIN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "KIDNEY_FUNCTION_TEST":
+                if re.search(r'\b(KFT|RFT|KIDNEY FUNCTION|RENAL FUNCTION|CREATININE|UREA)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "THYROID_FUNCTION_TEST":
+                if re.search(r'\b(TFT|THYROID|TSH|T3|T4)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "GLUCOSE_PANEL":
+                if re.search(r'\b(GLUCOSE|HBA1C|FASTING|POSTPRANDIAL)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "CRP_TEST":
+                if re.search(r'\b(CRP|C.REACTIVE PROTEIN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "ESR_TEST":
+                if re.search(r'\b(ESR|SEDIMENTATION RATE)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "COVID19_TEST":
+                if re.search(r'\b(COVID|SARS.COV.2|RT.PCR)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "MALARIA_TEST":
+                if re.search(r'\b(MALARIA|PLASMODIUM)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "TYPHOID_TEST":
+                if re.search(r'\b(TYPHOID|WIDAL)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "VITAMIN_D_TEST":
+                if re.search(r'\b(VITAMIN D|25.OH)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "VITAMIN_B12_TEST":
+                if re.search(r'\b(VITAMIN B12|B12|COBALAMIN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "IRON_STUDIES":
+                if re.search(r'\b(IRON|FERRITIN|TIBC)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "ELECTROLYTES_PANEL":
+                if re.search(r'\b(ELECTROLYTE|SODIUM|POTASSIUM)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "CARDIAC_ENZYMES":
+                if re.search(r'\b(TROPONIN|CPK|CK.MB)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "URINE_ROUTINE":
+                if re.search(r'\b(URINE|URINALYSIS|MICROSCOPY)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "COAGULATION_PANEL":
+                if re.search(r'\b(COAGULATION|PT|INR|APTT)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "HEPATITIS_PANEL":
+                if re.search(r'\b(HEPATITIS|HBSAG|ANTI.HCV)\b', ocr_text_upper):
+                    score += 15
+
             # Update best match
             if score > max_score:
                 max_score = score
@@ -178,6 +246,74 @@ class TemplateManager:
 
             elif test_type == "LIPID_PROFILE":
                 if re.search(r'\b(LIPID|CHOLESTEROL|HDL|LDL|TRIGLYCERIDE)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "LIVER_FUNCTION_TEST":
+                if re.search(r'\b(LFT|LIVER FUNCTION|SGOT|SGPT|ALT|AST|BILIRUBIN|ALKALINE PHOSPHATASE)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "KIDNEY_FUNCTION_TEST":
+                if re.search(r'\b(KFT|RFT|KIDNEY FUNCTION|RENAL FUNCTION|CREATININE|UREA|BUN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "THYROID_FUNCTION_TEST":
+                if re.search(r'\b(TFT|THYROID|TSH|T3|T4|FT3|FT4)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "GLUCOSE_PANEL":
+                if re.search(r'\b(GLUCOSE|SUGAR|HBA1C|FASTING|POSTPRANDIAL|DIABETES)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "CRP_TEST":
+                if re.search(r'\b(CRP|C.REACTIVE PROTEIN|C REACTIVE|CREACTIVE)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "ESR_TEST":
+                if re.search(r'\b(ESR|ERYTHROCYTE SEDIMENTATION|SEDIMENTATION RATE)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "COVID19_TEST":
+                if re.search(r'\b(COVID|SARS.COV.2|CORONAVIRUS|RT.PCR|ANTIGEN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "MALARIA_TEST":
+                if re.search(r'\b(MALARIA|PLASMODIUM|FALCIPARUM|VIVAX)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "TYPHOID_TEST":
+                if re.search(r'\b(TYPHOID|WIDAL|TYPHI|PARATYPHI)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "VITAMIN_D_TEST":
+                if re.search(r'\b(VITAMIN D|25.OH|25 HYDROXY|CHOLECALCIFEROL)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "VITAMIN_B12_TEST":
+                if re.search(r'\b(VITAMIN B12|B12|COBALAMIN|CYANOCOBALAMIN)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "IRON_STUDIES":
+                if re.search(r'\b(IRON|FERRITIN|TIBC|TRANSFERRIN|IRON BINDING)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "ELECTROLYTES_PANEL":
+                if re.search(r'\b(ELECTROLYTE|SODIUM|POTASSIUM|CHLORIDE|NA\+|K\+)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "CARDIAC_ENZYMES":
+                if re.search(r'\b(TROPONIN|CPK|CK.MB|CARDIAC|BNP|NT.PROBNP)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "URINE_ROUTINE":
+                if re.search(r'\b(URINE|URINALYSIS|MICROSCOPY|PUS CELLS)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "COAGULATION_PANEL":
+                if re.search(r'\b(COAGULATION|PT|INR|APTT|PROTHROMBIN|BLEEDING TIME)\b', ocr_text_upper):
+                    score += 15
+
+            elif test_type == "HEPATITIS_PANEL":
+                if re.search(r'\b(HEPATITIS|HBSAG|ANTI.HCV|HBV|HCV|HAV)\b', ocr_text_upper):
                     score += 15
 
             # Add to matches if above threshold

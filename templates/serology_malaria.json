@@ -1,0 +1,47 @@
+{
+  "templateId": "SEROLOGY_MALARIA_v1.0",
+  "testType": "MALARIA_TEST",
+  "displayName": "Malaria Test",
+  "category": "SEROLOGY",
+  "version": "1.0",
+  "description": "Malaria parasite detection test",
+  "sections": [
+    {
+      "sectionId": "MALARIA_DETECTION",
+      "sectionName": "Malaria Detection",
+      "description": "Parasite detection methods",
+      "parameters": [
+        {
+          "parameterId": "MALARIA_ANTIGEN_PF",
+          "displayName": "Malaria Antigen (P. falciparum)",
+          "aliases": ["MALARIA ANTIGEN PF", "P FALCIPARUM ANTIGEN", "PF ANTIGEN", "PLASMODIUM FALCIPARUM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["DETECTED", "NOT DETECTED", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "MALARIA_ANTIGEN_PV",
+          "displayName": "Malaria Antigen (P. vivax)",
+          "aliases": ["MALARIA ANTIGEN PV", "P VIVAX ANTIGEN", "PV ANTIGEN", "PLASMODIUM VIVAX"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["DETECTED", "NOT DETECTED", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "MALARIA_PARASITE",
+          "displayName": "Malaria Parasite (Blood Smear)",
+          "aliases": ["MALARIA PARASITE", "MP", "BLOOD SMEAR MALARIA", "PERIPHERAL SMEAR MALARIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["SEEN", "NOT SEEN", "POSITIVE", "NEGATIVE"]
+        }
+      ]
+    }
+  ]
+}

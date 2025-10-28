@@ -1,0 +1,68 @@
+{
+  "templateId": "BIOCHEMISTRY_VITAMIN_D_v1.0",
+  "testType": "VITAMIN_D_TEST",
+  "displayName": "Vitamin D (25-OH)",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Vitamin D status assessment",
+  "sections": [
+    {
+      "sectionId": "VITAMIN_D",
+      "sectionName": "Vitamin D",
+      "description": "Vitamin D levels",
+      "parameters": [
+        {
+          "parameterId": "VITAMIN_D_25OH",
+          "displayName": "25-Hydroxy Vitamin D",
+          "aliases": ["VITAMIN D", "25 OH VITAMIN D", "25-OH VITAMIN D", "VITAMIN D 25-OH", "VITAMIN D TOTAL", "25 HYDROXY VITAMIN D"],
+          "unit": "ng/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "deficient": {
+              "max": 20
+            },
+            "insufficient": {
+              "min": 20,
+              "max": 30
+            },
+            "sufficient": {
+              "min": 30,
+              "max": 100
+            },
+            "potentially_toxic": {
+              "min": 100
+            }
+          }
+        },
+        {
+          "parameterId": "VITAMIN_D3",
+          "displayName": "Vitamin D3 (Cholecalciferol)",
+          "aliases": ["VITAMIN D3", "25 OH D3", "CHOLECALCIFEROL"],
+          "unit": "ng/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 30,
+            "max": 100
+          }
+        },
+        {
+          "parameterId": "VITAMIN_D2",
+          "displayName": "Vitamin D2 (Ergocalciferol)",
+          "aliases": ["VITAMIN D2", "25 OH D2", "ERGOCALCIFEROL"],
+          "unit": "ng/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 0,
+            "max": 10
+          }
+        }
+      ]
+    }
+  ]
+}

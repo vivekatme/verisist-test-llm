@@ -1,0 +1,169 @@
+{
+  "templateId": "BIOCHEMISTRY_KIDNEY_FUNCTION_v1.0",
+  "testType": "KIDNEY_FUNCTION_TEST",
+  "displayName": "Kidney Function Test (KFT/RFT)",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Renal function panel assessing kidney health through waste products and electrolytes",
+  "sections": [
+    {
+      "sectionId": "NITROGEN_WASTE",
+      "sectionName": "Nitrogen Waste Products",
+      "description": "Waste products filtered by kidneys",
+      "parameters": [
+        {
+          "parameterId": "BLOOD_UREA",
+          "displayName": "Blood Urea",
+          "aliases": ["UREA", "BLOOD UREA", "SERUM UREA"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 15,
+            "max": 40
+          },
+          "criticalValues": {
+            "high": 100
+          }
+        },
+        {
+          "parameterId": "BUN",
+          "displayName": "Blood Urea Nitrogen (BUN)",
+          "aliases": ["BUN", "BLOOD UREA NITROGEN", "UREA NITROGEN"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "BLOOD_UREA / 2.14",
+          "referenceRange": {
+            "min": 7,
+            "max": 20
+          }
+        },
+        {
+          "parameterId": "SERUM_CREATININE",
+          "displayName": "Serum Creatinine",
+          "aliases": ["CREATININE", "SERUM CREATININE", "CREAT", "S.CREATININE"],
+          "unit": "mg/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 0.7,
+              "max": 1.3
+            },
+            "female": {
+              "min": 0.6,
+              "max": 1.1
+            }
+          },
+          "criticalValues": {
+            "high": 5.0
+          }
+        },
+        {
+          "parameterId": "BUN_CREATININE_RATIO",
+          "displayName": "BUN/Creatinine Ratio",
+          "aliases": ["BUN/CREAT RATIO", "UREA/CREATININE RATIO", "BUN CREATININE RATIO"],
+          "unit": "",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "BUN / SERUM_CREATININE",
+          "referenceRange": {
+            "min": 10,
+            "max": 20
+          }
+        },
+        {
+          "parameterId": "URIC_ACID",
+          "displayName": "Uric Acid",
+          "aliases": ["URIC ACID", "SERUM URIC ACID", "UA"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 3.5,
+              "max": 7.2
+            },
+            "female": {
+              "min": 2.6,
+              "max": 6.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "ELECTROLYTES",
+      "sectionName": "Electrolytes",
+      "description": "Essential minerals regulated by kidneys",
+      "parameters": [
+        {
+          "parameterId": "SODIUM",
+          "displayName": "Sodium",
+          "aliases": ["SODIUM", "NA", "Na+", "SERUM SODIUM"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 136,
+            "max": 145
+          },
+          "criticalValues": {
+            "low": 120,
+            "high": 160
+          }
+        },
+        {
+          "parameterId": "POTASSIUM",
+          "displayName": "Potassium",
+          "aliases": ["POTASSIUM", "K", "K+", "SERUM POTASSIUM"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 3.5,
+            "max": 5.1
+          },
+          "criticalValues": {
+            "low": 2.5,
+            "high": 6.5
+          }
+        },
+        {
+          "parameterId": "CHLORIDE",
+          "displayName": "Chloride",
+          "aliases": ["CHLORIDE", "CL", "Cl-", "SERUM CHLORIDE"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 98,
+            "max": 107
+          }
+        },
+        {
+          "parameterId": "BICARBONATE",
+          "displayName": "Bicarbonate",
+          "aliases": ["BICARBONATE", "HCO3", "CO2", "SERUM BICARBONATE"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 22,
+            "max": 29
+          }
+        }
+      ]
+    }
+  ]
+}

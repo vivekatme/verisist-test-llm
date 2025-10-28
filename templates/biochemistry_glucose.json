@@ -1,0 +1,120 @@
+{
+  "templateId": "BIOCHEMISTRY_GLUCOSE_v1.0",
+  "testType": "GLUCOSE_PANEL",
+  "displayName": "Blood Glucose Panel",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Glucose monitoring panel for diabetes screening and management",
+  "sections": [
+    {
+      "sectionId": "GLUCOSE_TESTS",
+      "sectionName": "Glucose Tests",
+      "description": "Blood glucose measurements",
+      "parameters": [
+        {
+          "parameterId": "FASTING_GLUCOSE",
+          "displayName": "Fasting Blood Glucose",
+          "aliases": ["FASTING GLUCOSE", "FBS", "FASTING BLOOD SUGAR", "GLUCOSE FASTING", "FASTING BLOOD GLUCOSE"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "min": 70,
+              "max": 100
+            },
+            "prediabetes": {
+              "min": 100,
+              "max": 125
+            },
+            "diabetes": {
+              "min": 126
+            }
+          },
+          "criticalValues": {
+            "low": 40,
+            "high": 300
+          }
+        },
+        {
+          "parameterId": "POSTPRANDIAL_GLUCOSE",
+          "displayName": "Postprandial Glucose",
+          "aliases": ["POSTPRANDIAL GLUCOSE", "PP GLUCOSE", "PPBS", "POST PRANDIAL BLOOD SUGAR", "2HR PP"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "normal": {
+              "max": 140
+            },
+            "prediabetes": {
+              "min": 140,
+              "max": 199
+            },
+            "diabetes": {
+              "min": 200
+            }
+          }
+        },
+        {
+          "parameterId": "RANDOM_GLUCOSE",
+          "displayName": "Random Blood Glucose",
+          "aliases": ["RANDOM GLUCOSE", "RBS", "RANDOM BLOOD SUGAR", "GLUCOSE RANDOM"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "normal": {
+              "min": 70,
+              "max": 140
+            },
+            "diabetes": {
+              "min": 200
+            }
+          }
+        },
+        {
+          "parameterId": "HBA1C",
+          "displayName": "HbA1c (Glycated Hemoglobin)",
+          "aliases": ["HBA1C", "HEMOGLOBIN A1C", "GLYCATED HEMOGLOBIN", "A1C", "GLYCOSYLATED HEMOGLOBIN"],
+          "unit": "%",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "max": 5.6
+            },
+            "prediabetes": {
+              "min": 5.7,
+              "max": 6.4
+            },
+            "diabetes": {
+              "min": 6.5
+            }
+          },
+          "criticalValues": {
+            "high": 10.0
+          }
+        },
+        {
+          "parameterId": "AVERAGE_BLOOD_GLUCOSE",
+          "displayName": "Average Blood Glucose (eAG)",
+          "aliases": ["AVERAGE BLOOD GLUCOSE", "EAG", "ESTIMATED AVERAGE GLUCOSE"],
+          "unit": "mg/dL",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "28.7 * HBA1C - 46.7",
+          "referenceRange": {
+            "min": 70,
+            "max": 126
+          }
+        }
+      ]
+    }
+  ]
+}

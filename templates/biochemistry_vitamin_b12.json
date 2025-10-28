@@ -1,0 +1,42 @@
+{
+  "templateId": "BIOCHEMISTRY_VITAMIN_B12_v1.0",
+  "testType": "VITAMIN_B12_TEST",
+  "displayName": "Vitamin B12",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Vitamin B12 (Cobalamin) level assessment",
+  "sections": [
+    {
+      "sectionId": "VITAMIN_B12",
+      "sectionName": "Vitamin B12",
+      "description": "Cobalamin levels",
+      "parameters": [
+        {
+          "parameterId": "VITAMIN_B12",
+          "displayName": "Vitamin B12",
+          "aliases": ["VITAMIN B12", "B12", "COBALAMIN", "CYANOCOBALAMIN", "SERUM B12"],
+          "unit": "pg/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "deficient": {
+              "max": 200
+            },
+            "borderline": {
+              "min": 200,
+              "max": 300
+            },
+            "normal": {
+              "min": 300,
+              "max": 900
+            }
+          },
+          "criticalValues": {
+            "low": 150
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+{
+  "templateId": "BIOCHEMISTRY_IRON_STUDIES_v1.0",
+  "testType": "IRON_STUDIES",
+  "displayName": "Iron Studies",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Comprehensive iron metabolism assessment",
+  "sections": [
+    {
+      "sectionId": "IRON_PARAMETERS",
+      "sectionName": "Iron Parameters",
+      "description": "Iron and binding capacity",
+      "parameters": [
+        {
+          "parameterId": "SERUM_IRON",
+          "displayName": "Serum Iron",
+          "aliases": ["SERUM IRON", "IRON", "SI", "SERUM FE"],
+          "unit": "µg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 65,
+              "max": 175
+            },
+            "female": {
+              "min": 50,
+              "max": 170
+            }
+          }
+        },
+        {
+          "parameterId": "TIBC",
+          "displayName": "Total Iron Binding Capacity (TIBC)",
+          "aliases": ["TIBC", "TOTAL IRON BINDING CAPACITY", "IRON BINDING CAPACITY"],
+          "unit": "µg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 240,
+            "max": 450
+          }
+        },
+        {
+          "parameterId": "TRANSFERRIN_SATURATION",
+          "displayName": "Transferrin Saturation",
+          "aliases": ["TRANSFERRIN SATURATION", "TSAT", "% SATURATION", "IRON SATURATION"],
+          "unit": "%",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "(SERUM_IRON / TIBC) * 100",
+          "referenceRange": {
+            "male": {
+              "min": 20,
+              "max": 50
+            },
+            "female": {
+              "min": 15,
+              "max": 50
+            }
+          }
+        },
+        {
+          "parameterId": "UIBC",
+          "displayName": "Unsaturated Iron Binding Capacity (UIBC)",
+          "aliases": ["UIBC", "UNSATURATED IRON BINDING CAPACITY"],
+          "unit": "µg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "TIBC - SERUM_IRON",
+          "referenceRange": {
+            "min": 111,
+            "max": 343
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "FERRITIN",
+      "sectionName": "Iron Storage",
+      "description": "Iron storage marker",
+      "parameters": [
+        {
+          "parameterId": "FERRITIN",
+          "displayName": "Ferritin",
+          "aliases": ["FERRITIN", "SERUM FERRITIN"],
+          "unit": "ng/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 30,
+              "max": 400
+            },
+            "female": {
+              "min": 15,
+              "max": 150
+            }
+          },
+          "criticalValues": {
+            "low": 10
+          }
+        },
+        {
+          "parameterId": "TRANSFERRIN",
+          "displayName": "Transferrin",
+          "aliases": ["TRANSFERRIN", "SERUM TRANSFERRIN"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 200,
+            "max": 360
+          }
+        }
+      ]
+    }
+  ]
+}

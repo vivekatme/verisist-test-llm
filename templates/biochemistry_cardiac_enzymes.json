@@ -1,0 +1,175 @@
+{
+  "templateId": "BIOCHEMISTRY_CARDIAC_ENZYMES_v1.0",
+  "testType": "CARDIAC_ENZYMES",
+  "displayName": "Cardiac Enzymes",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Cardiac markers for heart damage assessment",
+  "sections": [
+    {
+      "sectionId": "TROPONINS",
+      "sectionName": "Troponins",
+      "description": "Cardiac-specific troponins",
+      "parameters": [
+        {
+          "parameterId": "TROPONIN_I",
+          "displayName": "Troponin I",
+          "aliases": ["TROPONIN I", "TROPI", "TROP I", "CARDIAC TROPONIN I", "CTNI"],
+          "unit": "ng/mL",
+          "decimalPlaces": 3,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "max": 0.04
+            }
+          },
+          "criticalValues": {
+            "high": 0.1
+          }
+        },
+        {
+          "parameterId": "TROPONIN_T",
+          "displayName": "Troponin T",
+          "aliases": ["TROPONIN T", "TROPT", "TROP T", "CARDIAC TROPONIN T", "CTNT"],
+          "unit": "ng/mL",
+          "decimalPlaces": 3,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "normal": {
+              "max": 0.01
+            }
+          },
+          "criticalValues": {
+            "high": 0.1
+          }
+        },
+        {
+          "parameterId": "HS_TROPONIN_I",
+          "displayName": "High-Sensitivity Troponin I",
+          "aliases": ["HS TROPONIN I", "HIGH SENSITIVITY TROPONIN I", "HSTNI"],
+          "unit": "ng/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "male": {
+              "max": 34
+            },
+            "female": {
+              "max": 16
+            }
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "CK_ENZYMES",
+      "sectionName": "Creatine Kinase",
+      "description": "CK and CK-MB",
+      "parameters": [
+        {
+          "parameterId": "CPK",
+          "displayName": "Creatine Phosphokinase (CPK/CK)",
+          "aliases": ["CPK", "CK", "CREATINE KINASE", "CREATINE PHOSPHOKINASE", "TOTAL CK"],
+          "unit": "U/L",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 38,
+              "max": 174
+            },
+            "female": {
+              "min": 26,
+              "max": 140
+            }
+          }
+        },
+        {
+          "parameterId": "CPK_MB",
+          "displayName": "CPK-MB",
+          "aliases": ["CPK MB", "CPK-MB", "CK MB", "CK-MB", "CREATINE KINASE MB"],
+          "unit": "ng/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "max": 5.0
+            }
+          },
+          "criticalValues": {
+            "high": 10.0
+          }
+        },
+        {
+          "parameterId": "CPK_MB_PERCENT",
+          "displayName": "CPK-MB %",
+          "aliases": ["CPK MB PERCENT", "CPK-MB %", "CK MB %", "% CK-MB"],
+          "unit": "%",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "(CPK_MB / CPK) * 100",
+          "referenceRange": {
+            "normal": {
+              "max": 6.0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "OTHER_MARKERS",
+      "sectionName": "Other Markers",
+      "description": "Additional cardiac markers",
+      "parameters": [
+        {
+          "parameterId": "LDH",
+          "displayName": "Lactate Dehydrogenase (LDH)",
+          "aliases": ["LDH", "LACTATE DEHYDROGENASE", "LD"],
+          "unit": "U/L",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 140,
+            "max": 280
+          }
+        },
+        {
+          "parameterId": "BNP",
+          "displayName": "B-Type Natriuretic Peptide (BNP)",
+          "aliases": ["BNP", "B TYPE NATRIURETIC PEPTIDE", "BRAIN NATRIURETIC PEPTIDE"],
+          "unit": "pg/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "normal": {
+              "max": 100
+            },
+            "heart_failure": {
+              "min": 100
+            }
+          }
+        },
+        {
+          "parameterId": "NT_PRO_BNP",
+          "displayName": "NT-proBNP",
+          "aliases": ["NT-PROBNP", "NT PROBNP", "N TERMINAL PRO BNP"],
+          "unit": "pg/mL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "note": "Age-dependent: <50y: <450, 50-75y: <900, >75y: <1800 pg/mL"
+          }
+        }
+      ]
+    }
+  ]
+}

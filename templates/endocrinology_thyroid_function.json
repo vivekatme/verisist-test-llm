@@ -1,0 +1,86 @@
+{
+  "templateId": "ENDOCRINOLOGY_THYROID_FUNCTION_v1.0",
+  "testType": "THYROID_FUNCTION_TEST",
+  "displayName": "Thyroid Function Test (TFT)",
+  "category": "ENDOCRINOLOGY",
+  "version": "1.0",
+  "description": "Thyroid panel measuring TSH and thyroid hormones to assess thyroid function",
+  "sections": [
+    {
+      "sectionId": "THYROID_HORMONES",
+      "sectionName": "Thyroid Hormones",
+      "description": "Key thyroid function markers",
+      "parameters": [
+        {
+          "parameterId": "TSH",
+          "displayName": "Thyroid Stimulating Hormone (TSH)",
+          "aliases": ["TSH", "THYROID STIMULATING HORMONE", "THYROTROPIN"],
+          "unit": "µIU/mL",
+          "decimalPlaces": 3,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 0.27,
+            "max": 4.2
+          },
+          "criticalValues": {
+            "low": 0.1,
+            "high": 10.0
+          }
+        },
+        {
+          "parameterId": "T3_TOTAL",
+          "displayName": "Total T3",
+          "aliases": ["T3 TOTAL", "TOTAL T3", "TRIIODOTHYRONINE TOTAL", "T3"],
+          "unit": "ng/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 80,
+            "max": 200
+          }
+        },
+        {
+          "parameterId": "T4_TOTAL",
+          "displayName": "Total T4",
+          "aliases": ["T4 TOTAL", "TOTAL T4", "THYROXINE TOTAL", "T4"],
+          "unit": "µg/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 4.5,
+            "max": 12.0
+          }
+        },
+        {
+          "parameterId": "FT3",
+          "displayName": "Free T3",
+          "aliases": ["FREE T3", "FT3", "FREE TRIIODOTHYRONINE"],
+          "unit": "pg/mL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 2.0,
+            "max": 4.4
+          }
+        },
+        {
+          "parameterId": "FT4",
+          "displayName": "Free T4",
+          "aliases": ["FREE T4", "FT4", "FREE THYROXINE"],
+          "unit": "ng/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 0.89,
+            "max": 1.76
+          }
+        }
+      ]
+    }
+  ]
+}

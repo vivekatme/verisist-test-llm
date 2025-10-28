@@ -1,0 +1,154 @@
+{
+  "templateId": "HEMATOLOGY_COAGULATION_v1.0",
+  "testType": "COAGULATION_PANEL",
+  "displayName": "Coagulation Panel",
+  "category": "HEMATOLOGY",
+  "version": "1.0",
+  "description": "Blood clotting function assessment",
+  "sections": [
+    {
+      "sectionId": "CLOTTING_TESTS",
+      "sectionName": "Clotting Tests",
+      "description": "Prothrombin and partial thromboplastin time",
+      "parameters": [
+        {
+          "parameterId": "PT",
+          "displayName": "Prothrombin Time (PT)",
+          "aliases": ["PT", "PROTHROMBIN TIME", "PRO TIME"],
+          "unit": "seconds",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 11.0,
+            "max": 13.5
+          }
+        },
+        {
+          "parameterId": "PT_CONTROL",
+          "displayName": "PT Control",
+          "aliases": ["PT CONTROL", "CONTROL PT"],
+          "unit": "seconds",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 11.0,
+            "max": 13.5
+          }
+        },
+        {
+          "parameterId": "INR",
+          "displayName": "International Normalized Ratio (INR)",
+          "aliases": ["INR", "INTERNATIONAL NORMALIZED RATIO"],
+          "unit": "",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "min": 0.8,
+              "max": 1.2
+            },
+            "therapeutic_anticoagulation": {
+              "min": 2.0,
+              "max": 3.0
+            }
+          },
+          "criticalValues": {
+            "high": 5.0
+          }
+        },
+        {
+          "parameterId": "APTT",
+          "displayName": "Activated Partial Thromboplastin Time (aPTT)",
+          "aliases": ["APTT", "APTT", "PTT", "PARTIAL THROMBOPLASTIN TIME"],
+          "unit": "seconds",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 25.0,
+            "max": 35.0
+          }
+        },
+        {
+          "parameterId": "APTT_CONTROL",
+          "displayName": "aPTT Control",
+          "aliases": ["APTT CONTROL", "CONTROL APTT"],
+          "unit": "seconds",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 25.0,
+            "max": 35.0
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "OTHER_PARAMETERS",
+      "sectionName": "Other Parameters",
+      "description": "Additional coagulation markers",
+      "parameters": [
+        {
+          "parameterId": "BLEEDING_TIME",
+          "displayName": "Bleeding Time (BT)",
+          "aliases": ["BLEEDING TIME", "BT"],
+          "unit": "minutes",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 2.0,
+            "max": 7.0
+          }
+        },
+        {
+          "parameterId": "CLOTTING_TIME",
+          "displayName": "Clotting Time (CT)",
+          "aliases": ["CLOTTING TIME", "CT", "COAGULATION TIME"],
+          "unit": "minutes",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 5.0,
+            "max": 11.0
+          }
+        },
+        {
+          "parameterId": "FIBRINOGEN",
+          "displayName": "Fibrinogen",
+          "aliases": ["FIBRINOGEN", "FACTOR I"],
+          "unit": "mg/dL",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 200,
+            "max": 400
+          }
+        },
+        {
+          "parameterId": "D_DIMER",
+          "displayName": "D-Dimer",
+          "aliases": ["D DIMER", "D-DIMER", "DDIMER"],
+          "unit": "ng/mL",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "normal": {
+              "max": 500
+            }
+          },
+          "criticalValues": {
+            "high": 2000
+          }
+        }
+      ]
+    }
+  ]
+}

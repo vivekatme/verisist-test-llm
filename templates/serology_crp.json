@@ -1,0 +1,65 @@
+{
+  "templateId": "SEROLOGY_CRP_v1.0",
+  "testType": "CRP_TEST",
+  "displayName": "C-Reactive Protein (CRP)",
+  "category": "SEROLOGY",
+  "version": "1.0",
+  "description": "Inflammation marker test",
+  "sections": [
+    {
+      "sectionId": "CRP",
+      "sectionName": "CRP",
+      "description": "Inflammation markers",
+      "parameters": [
+        {
+          "parameterId": "CRP",
+          "displayName": "C-Reactive Protein (CRP)",
+          "aliases": ["CRP", "C REACTIVE PROTEIN", "C-REACTIVE PROTEIN", "CREACTIVE PROTEIN"],
+          "unit": "mg/L",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "normal": {
+              "max": 3.0
+            },
+            "low_risk": {
+              "max": 1.0
+            },
+            "average_risk": {
+              "min": 1.0,
+              "max": 3.0
+            },
+            "high_risk": {
+              "min": 3.0
+            }
+          },
+          "criticalValues": {
+            "high": 10.0
+          }
+        },
+        {
+          "parameterId": "HS_CRP",
+          "displayName": "High-Sensitivity CRP (hs-CRP)",
+          "aliases": ["HS-CRP", "HIGH SENSITIVITY CRP", "HSCRP", "HS CRP", "HIGH SENSITIVE CRP"],
+          "unit": "mg/L",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "low_risk": {
+              "max": 1.0
+            },
+            "average_risk": {
+              "min": 1.0,
+              "max": 3.0
+            },
+            "high_risk": {
+              "min": 3.0
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

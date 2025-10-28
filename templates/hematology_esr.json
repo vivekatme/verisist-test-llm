@@ -1,0 +1,39 @@
+{
+  "templateId": "HEMATOLOGY_ESR_v1.0",
+  "testType": "ESR_TEST",
+  "displayName": "Erythrocyte Sedimentation Rate (ESR)",
+  "category": "HEMATOLOGY",
+  "version": "1.0",
+  "description": "Inflammation and infection screening test",
+  "sections": [
+    {
+      "sectionId": "ESR",
+      "sectionName": "ESR",
+      "description": "Sedimentation rate measurement",
+      "parameters": [
+        {
+          "parameterId": "ESR",
+          "displayName": "ESR",
+          "aliases": ["ESR", "ERYTHROCYTE SEDIMENTATION RATE", "SED RATE", "SEDIMENTATION RATE"],
+          "unit": "mm/hr",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 0,
+              "max": 15
+            },
+            "female": {
+              "min": 0,
+              "max": 20
+            }
+          },
+          "criticalValues": {
+            "high": 100
+          }
+        }
+      ]
+    }
+  ]
+}

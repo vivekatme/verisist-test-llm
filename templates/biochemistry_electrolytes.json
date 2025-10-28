@@ -1,0 +1,140 @@
+{
+  "templateId": "BIOCHEMISTRY_ELECTROLYTES_v1.0",
+  "testType": "ELECTROLYTES_PANEL",
+  "displayName": "Electrolytes Panel",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Comprehensive electrolyte balance assessment",
+  "sections": [
+    {
+      "sectionId": "MAJOR_ELECTROLYTES",
+      "sectionName": "Major Electrolytes",
+      "description": "Primary electrolytes",
+      "parameters": [
+        {
+          "parameterId": "SODIUM",
+          "displayName": "Sodium",
+          "aliases": ["SODIUM", "NA", "Na+", "SERUM SODIUM"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 136,
+            "max": 145
+          },
+          "criticalValues": {
+            "low": 120,
+            "high": 160
+          }
+        },
+        {
+          "parameterId": "POTASSIUM",
+          "displayName": "Potassium",
+          "aliases": ["POTASSIUM", "K", "K+", "SERUM POTASSIUM"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 3.5,
+            "max": 5.1
+          },
+          "criticalValues": {
+            "low": 2.5,
+            "high": 6.5
+          }
+        },
+        {
+          "parameterId": "CHLORIDE",
+          "displayName": "Chloride",
+          "aliases": ["CHLORIDE", "CL", "Cl-", "SERUM CHLORIDE"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 98,
+            "max": 107
+          }
+        },
+        {
+          "parameterId": "BICARBONATE",
+          "displayName": "Bicarbonate",
+          "aliases": ["BICARBONATE", "HCO3", "CO2", "SERUM BICARBONATE"],
+          "unit": "mEq/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 22,
+            "max": 29
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "MINERALS",
+      "sectionName": "Minerals",
+      "description": "Calcium, magnesium, phosphorus",
+      "parameters": [
+        {
+          "parameterId": "CALCIUM",
+          "displayName": "Calcium",
+          "aliases": ["CALCIUM", "CA", "SERUM CALCIUM", "TOTAL CALCIUM"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 8.5,
+            "max": 10.5
+          },
+          "criticalValues": {
+            "low": 6.5,
+            "high": 13.0
+          }
+        },
+        {
+          "parameterId": "IONIZED_CALCIUM",
+          "displayName": "Ionized Calcium",
+          "aliases": ["IONIZED CALCIUM", "FREE CALCIUM", "CA++", "CALCIUM ION"],
+          "unit": "mmol/L",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 1.12,
+            "max": 1.32
+          }
+        },
+        {
+          "parameterId": "MAGNESIUM",
+          "displayName": "Magnesium",
+          "aliases": ["MAGNESIUM", "MG", "SERUM MAGNESIUM"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 1.7,
+            "max": 2.2
+          }
+        },
+        {
+          "parameterId": "PHOSPHORUS",
+          "displayName": "Phosphorus",
+          "aliases": ["PHOSPHORUS", "PHOSPHATE", "INORGANIC PHOSPHORUS", "SERUM PHOSPHORUS"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "min": 2.5,
+            "max": 4.5
+          }
+        }
+      ]
+    }
+  ]
+}

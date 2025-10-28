@@ -1,0 +1,207 @@
+{
+  "templateId": "BIOCHEMISTRY_LIVER_FUNCTION_v1.0",
+  "testType": "LIVER_FUNCTION_TEST",
+  "displayName": "Liver Function Test (LFT)",
+  "category": "BIOCHEMISTRY",
+  "version": "1.0",
+  "description": "Comprehensive liver function panel measuring enzymes, proteins, and bilirubin to assess liver health",
+  "sections": [
+    {
+      "sectionId": "LIVER_ENZYMES",
+      "sectionName": "Liver Enzymes",
+      "description": "Enzymes indicating liver cell damage",
+      "parameters": [
+        {
+          "parameterId": "SGOT_AST",
+          "displayName": "SGOT (AST)",
+          "aliases": ["AST", "ASPARTATE AMINOTRANSFERASE", "SGOT", "SERUM GLUTAMIC OXALOACETIC TRANSAMINASE"],
+          "unit": "U/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 0,
+              "max": 40
+            },
+            "female": {
+              "min": 0,
+              "max": 32
+            }
+          },
+          "criticalValues": {
+            "high": 200
+          }
+        },
+        {
+          "parameterId": "SGPT_ALT",
+          "displayName": "SGPT (ALT)",
+          "aliases": ["ALT", "ALANINE AMINOTRANSFERASE", "SGPT", "SERUM GLUTAMIC PYRUVIC TRANSAMINASE"],
+          "unit": "U/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "male": {
+              "min": 0,
+              "max": 41
+            },
+            "female": {
+              "min": 0,
+              "max": 33
+            }
+          },
+          "criticalValues": {
+            "high": 200
+          }
+        },
+        {
+          "parameterId": "ALP",
+          "displayName": "Alkaline Phosphatase (ALP)",
+          "aliases": ["ALKALINE PHOSPHATASE", "ALP", "ALK PHOS"],
+          "unit": "U/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 30,
+            "max": 120
+          }
+        },
+        {
+          "parameterId": "GGT",
+          "displayName": "Gamma-Glutamyl Transferase (GGT)",
+          "aliases": ["GGT", "GAMMA GT", "GAMMA GLUTAMYL TRANSFERASE", "GGTP"],
+          "unit": "U/L",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "male": {
+              "min": 0,
+              "max": 55
+            },
+            "female": {
+              "min": 0,
+              "max": 38
+            }
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "BILIRUBIN",
+      "sectionName": "Bilirubin",
+      "description": "Bilirubin levels indicating liver excretion function",
+      "parameters": [
+        {
+          "parameterId": "TOTAL_BILIRUBIN",
+          "displayName": "Total Bilirubin",
+          "aliases": ["BILIRUBIN TOTAL", "TOTAL BILIRUBIN", "BILIRUBIN T"],
+          "unit": "mg/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 0.3,
+            "max": 1.2
+          },
+          "criticalValues": {
+            "high": 12
+          }
+        },
+        {
+          "parameterId": "DIRECT_BILIRUBIN",
+          "displayName": "Direct Bilirubin",
+          "aliases": ["BILIRUBIN DIRECT", "DIRECT BILIRUBIN", "CONJUGATED BILIRUBIN", "BILIRUBIN D"],
+          "unit": "mg/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 0,
+            "max": 0.3
+          }
+        },
+        {
+          "parameterId": "INDIRECT_BILIRUBIN",
+          "displayName": "Indirect Bilirubin",
+          "aliases": ["BILIRUBIN INDIRECT", "INDIRECT BILIRUBIN", "UNCONJUGATED BILIRUBIN", "BILIRUBIN I"],
+          "unit": "mg/dL",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "TOTAL_BILIRUBIN - DIRECT_BILIRUBIN",
+          "referenceRange": {
+            "min": 0.1,
+            "max": 1.0
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "PROTEINS",
+      "sectionName": "Proteins",
+      "description": "Protein synthesis indicators",
+      "parameters": [
+        {
+          "parameterId": "TOTAL_PROTEIN",
+          "displayName": "Total Protein",
+          "aliases": ["TOTAL PROTEIN", "PROTEIN TOTAL", "SERUM PROTEIN"],
+          "unit": "g/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 6.0,
+            "max": 8.3
+          }
+        },
+        {
+          "parameterId": "ALBUMIN",
+          "displayName": "Albumin",
+          "aliases": ["ALBUMIN", "SERUM ALBUMIN", "ALB"],
+          "unit": "g/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 3.5,
+            "max": 5.5
+          },
+          "criticalValues": {
+            "low": 2.0
+          }
+        },
+        {
+          "parameterId": "GLOBULIN",
+          "displayName": "Globulin",
+          "aliases": ["GLOBULIN", "SERUM GLOBULIN"],
+          "unit": "g/dL",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "TOTAL_PROTEIN - ALBUMIN",
+          "referenceRange": {
+            "min": 2.0,
+            "max": 3.5
+          }
+        },
+        {
+          "parameterId": "AG_RATIO",
+          "displayName": "A/G Ratio",
+          "aliases": ["A/G RATIO", "ALBUMIN GLOBULIN RATIO", "A:G RATIO", "AG RATIO"],
+          "unit": "",
+          "decimalPlaces": 2,
+          "dataType": "numeric",
+          "required": false,
+          "formula": "ALBUMIN / GLOBULIN",
+          "referenceRange": {
+            "min": 1.0,
+            "max": 2.5
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "templateId": "SEROLOGY_COVID19_v1.0",
+  "testType": "COVID19_TEST",
+  "displayName": "COVID-19 Test",
+  "category": "SEROLOGY",
+  "version": "1.0",
+  "description": "SARS-CoV-2 detection and antibody tests",
+  "sections": [
+    {
+      "sectionId": "MOLECULAR",
+      "sectionName": "Molecular Tests",
+      "description": "RT-PCR and antigen detection",
+      "parameters": [
+        {
+          "parameterId": "COVID_RT_PCR",
+          "displayName": "COVID-19 RT-PCR",
+          "aliases": ["COVID RT-PCR", "COVID RT PCR", "SARS COV 2 RT PCR", "COVID19 RT-PCR", "SARS-COV-2 RNA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["DETECTED", "NOT DETECTED", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "COVID_ANTIGEN",
+          "displayName": "COVID-19 Antigen",
+          "aliases": ["COVID ANTIGEN", "SARS COV 2 ANTIGEN", "COVID19 ANTIGEN", "RAPID ANTIGEN TEST"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["DETECTED", "NOT DETECTED", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "CT_VALUE",
+          "displayName": "CT Value",
+          "aliases": ["CT VALUE", "CYCLE THRESHOLD", "CT", "THRESHOLD CYCLE"],
+          "unit": "",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "note": "CT <30: High viral load, 30-35: Moderate, >35: Low viral load"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "ANTIBODIES",
+      "sectionName": "Antibody Tests",
+      "description": "Immune response markers",
+      "parameters": [
+        {
+          "parameterId": "COVID_IGG",
+          "displayName": "COVID-19 IgG Antibody",
+          "aliases": ["COVID IGG", "SARS COV 2 IGG", "COVID19 IGG ANTIBODY", "SARS-COV-2 IGG"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "COVID_IGM",
+          "displayName": "COVID-19 IgM Antibody",
+          "aliases": ["COVID IGM", "SARS COV 2 IGM", "COVID19 IGM ANTIBODY", "SARS-COV-2 IGM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "COVID_TOTAL_ANTIBODY",
+          "displayName": "COVID-19 Total Antibody",
+          "aliases": ["COVID TOTAL ANTIBODY", "SARS COV 2 TOTAL ANTIBODY", "COVID19 ANTIBODY"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        }
+      ]
+    }
+  ]
+}

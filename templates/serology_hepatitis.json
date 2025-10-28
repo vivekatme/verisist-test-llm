@@ -1,0 +1,174 @@
+{
+  "templateId": "SEROLOGY_HEPATITIS_v1.0",
+  "testType": "HEPATITIS_PANEL",
+  "displayName": "Hepatitis Panel",
+  "category": "SEROLOGY",
+  "version": "1.0",
+  "description": "Hepatitis A, B, C markers for viral hepatitis detection",
+  "sections": [
+    {
+      "sectionId": "HEPATITIS_A",
+      "sectionName": "Hepatitis A",
+      "description": "HAV markers",
+      "parameters": [
+        {
+          "parameterId": "HAV_IGM",
+          "displayName": "Hepatitis A IgM (Anti-HAV IgM)",
+          "aliases": ["HAV IGM", "ANTI HAV IGM", "HEPATITIS A IGM", "ANTI-HAV IGM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "HAV_IGG",
+          "displayName": "Hepatitis A IgG (Anti-HAV IgG)",
+          "aliases": ["HAV IGG", "ANTI HAV IGG", "HEPATITIS A IGG", "ANTI-HAV IGG"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        }
+      ]
+    },
+    {
+      "sectionId": "HEPATITIS_B",
+      "sectionName": "Hepatitis B",
+      "description": "HBV markers",
+      "parameters": [
+        {
+          "parameterId": "HBSAG",
+          "displayName": "HBsAg (Hepatitis B Surface Antigen)",
+          "aliases": ["HBSAG", "HBS AG", "HEPATITIS B SURFACE ANTIGEN", "HBV SURFACE ANTIGEN"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "ANTI_HBS",
+          "displayName": "Anti-HBs (Hepatitis B Surface Antibody)",
+          "aliases": ["ANTI HBS", "ANTI-HBS", "HBS ANTIBODY", "HEPATITIS B SURFACE ANTIBODY"],
+          "unit": "mIU/mL",
+          "decimalPlaces": 1,
+          "dataType": "text",
+          "required": false,
+          "referenceRange": {
+            "note": "Protective: >10 mIU/mL"
+          }
+        },
+        {
+          "parameterId": "ANTI_HBC_TOTAL",
+          "displayName": "Anti-HBc Total (Hepatitis B Core Antibody)",
+          "aliases": ["ANTI HBC TOTAL", "ANTI-HBC", "HBC ANTIBODY TOTAL", "HEPATITIS B CORE ANTIBODY"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "ANTI_HBC_IGM",
+          "displayName": "Anti-HBc IgM",
+          "aliases": ["ANTI HBC IGM", "ANTI-HBC IGM", "HBC IGM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "HBEAG",
+          "displayName": "HBeAg (Hepatitis B e Antigen)",
+          "aliases": ["HBEAG", "HBE AG", "HEPATITIS B E ANTIGEN"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "ANTI_HBE",
+          "displayName": "Anti-HBe (Hepatitis B e Antibody)",
+          "aliases": ["ANTI HBE", "ANTI-HBE", "HBE ANTIBODY"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "HBV_DNA",
+          "displayName": "HBV DNA Quantitative",
+          "aliases": ["HBV DNA", "HEPATITIS B DNA", "HBV VIRAL LOAD"],
+          "unit": "IU/mL",
+          "decimalPlaces": 0,
+          "dataType": "numeric",
+          "required": false,
+          "referenceRange": {
+            "note": "Not Detected or <20 IU/mL"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "HEPATITIS_C",
+      "sectionName": "Hepatitis C",
+      "description": "HCV markers",
+      "parameters": [
+        {
+          "parameterId": "ANTI_HCV",
+          "displayName": "Anti-HCV (Hepatitis C Antibody)",
+          "aliases": ["ANTI HCV", "ANTI-HCV", "HCV ANTIBODY", "HEPATITIS C ANTIBODY"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "HCV_RNA",
+          "displayName": "HCV RNA Quantitative",
+          "aliases": ["HCV RNA", "HEPATITIS C RNA", "HCV VIRAL LOAD"],
+          "unit": "IU/mL",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "referenceRange": {
+            "note": "Not Detected or <15 IU/mL"
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "HEPATITIS_E",
+      "sectionName": "Hepatitis E",
+      "description": "HEV markers",
+      "parameters": [
+        {
+          "parameterId": "HEV_IGM",
+          "displayName": "Hepatitis E IgM (Anti-HEV IgM)",
+          "aliases": ["HEV IGM", "ANTI HEV IGM", "HEPATITIS E IGM", "ANTI-HEV IGM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "HEV_IGG",
+          "displayName": "Hepatitis E IgG (Anti-HEV IgG)",
+          "aliases": ["HEV IGG", "ANTI HEV IGG", "HEPATITIS E IGG", "ANTI-HEV IGG"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,231 @@
+{
+  "templateId": "URINE_ROUTINE_EXAMINATION_v1.0",
+  "testType": "URINE_ROUTINE",
+  "displayName": "Urine Routine Examination",
+  "category": "URINE",
+  "version": "1.0",
+  "description": "Complete urine analysis including physical, chemical, and microscopic examination",
+  "sections": [
+    {
+      "sectionId": "PHYSICAL_EXAMINATION",
+      "sectionName": "Physical Examination",
+      "description": "Physical characteristics",
+      "parameters": [
+        {
+          "parameterId": "URINE_COLOR",
+          "displayName": "Color",
+          "aliases": ["COLOR", "COLOUR", "URINE COLOR"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["PALE YELLOW", "YELLOW", "DARK YELLOW", "AMBER", "COLORLESS"]
+        },
+        {
+          "parameterId": "URINE_APPEARANCE",
+          "displayName": "Appearance",
+          "aliases": ["APPEARANCE", "CLARITY", "TURBIDITY"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["CLEAR", "SLIGHTLY TURBID", "TURBID", "CLOUDY"]
+        },
+        {
+          "parameterId": "SPECIFIC_GRAVITY",
+          "displayName": "Specific Gravity",
+          "aliases": ["SPECIFIC GRAVITY", "SP GRAVITY", "SP.GR"],
+          "unit": "",
+          "decimalPlaces": 3,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 1.005,
+            "max": 1.030
+          }
+        }
+      ]
+    },
+    {
+      "sectionId": "CHEMICAL_EXAMINATION",
+      "sectionName": "Chemical Examination",
+      "description": "Chemical dipstick analysis",
+      "parameters": [
+        {
+          "parameterId": "URINE_PH",
+          "displayName": "pH",
+          "aliases": ["PH", "URINE PH", "REACTION"],
+          "unit": "",
+          "decimalPlaces": 1,
+          "dataType": "numeric",
+          "required": true,
+          "referenceRange": {
+            "min": 4.5,
+            "max": 8.0
+          }
+        },
+        {
+          "parameterId": "URINE_PROTEIN",
+          "displayName": "Protein",
+          "aliases": ["PROTEIN", "ALBUMIN", "PROTEINURIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NIL", "TRACE", "+", "++", "+++", "++++", "NEGATIVE"]
+        },
+        {
+          "parameterId": "URINE_GLUCOSE",
+          "displayName": "Glucose",
+          "aliases": ["GLUCOSE", "SUGAR", "GLYCOSURIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NIL", "TRACE", "+", "++", "+++", "++++", "NEGATIVE"]
+        },
+        {
+          "parameterId": "URINE_KETONES",
+          "displayName": "Ketones",
+          "aliases": ["KETONES", "KETONE BODIES", "KETONURIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NIL", "TRACE", "+", "++", "+++", "NEGATIVE"]
+        },
+        {
+          "parameterId": "URINE_BLOOD",
+          "displayName": "Blood",
+          "aliases": ["BLOOD", "HEMOGLOBIN", "HEMATURIA", "OCCULT BLOOD"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NIL", "TRACE", "+", "++", "+++", "NEGATIVE"]
+        },
+        {
+          "parameterId": "URINE_BILIRUBIN",
+          "displayName": "Bilirubin",
+          "aliases": ["BILIRUBIN", "BILE", "BILIRUBINURIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NIL", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "UROBILINOGEN",
+          "displayName": "Urobilinogen",
+          "aliases": ["UROBILINOGEN", "UBG"],
+          "unit": "mg/dL",
+          "decimalPlaces": 1,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NORMAL", "0.1-1.0", "INCREASED"]
+        },
+        {
+          "parameterId": "NITRITES",
+          "displayName": "Nitrites",
+          "aliases": ["NITRITES", "NITRITE"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NEGATIVE", "POSITIVE"]
+        },
+        {
+          "parameterId": "LEUKOCYTE_ESTERASE",
+          "displayName": "Leukocyte Esterase",
+          "aliases": ["LEUKOCYTE ESTERASE", "LE", "WBC ESTERASE"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NEGATIVE", "TRACE", "+", "++", "+++"]
+        }
+      ]
+    },
+    {
+      "sectionId": "MICROSCOPIC_EXAMINATION",
+      "sectionName": "Microscopic Examination",
+      "description": "Sediment analysis",
+      "parameters": [
+        {
+          "parameterId": "PUS_CELLS",
+          "displayName": "Pus Cells",
+          "aliases": ["PUS CELLS", "WBC", "LEUCOCYTES", "PYURIA"],
+          "unit": "/hpf",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "referenceRange": {
+            "note": "Normal: 0-5/hpf"
+          }
+        },
+        {
+          "parameterId": "RBC",
+          "displayName": "Red Blood Cells (RBC)",
+          "aliases": ["RBC", "RED BLOOD CELLS", "ERYTHROCYTES"],
+          "unit": "/hpf",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "referenceRange": {
+            "note": "Normal: 0-2/hpf"
+          }
+        },
+        {
+          "parameterId": "EPITHELIAL_CELLS",
+          "displayName": "Epithelial Cells",
+          "aliases": ["EPITHELIAL CELLS", "EPI CELLS", "SQUAMOUS CELLS"],
+          "unit": "/hpf",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["FEW", "MODERATE", "MANY", "0-5/hpf"]
+        },
+        {
+          "parameterId": "CASTS",
+          "displayName": "Casts",
+          "aliases": ["CASTS", "URINARY CASTS"],
+          "unit": "/lpf",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NIL", "HYALINE", "GRANULAR", "CELLULAR", "NEGATIVE"]
+        },
+        {
+          "parameterId": "CRYSTALS",
+          "displayName": "Crystals",
+          "aliases": ["CRYSTALS", "URINARY CRYSTALS"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NIL", "URIC ACID", "CALCIUM OXALATE", "PHOSPHATE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "BACTERIA",
+          "displayName": "Bacteria",
+          "aliases": ["BACTERIA", "BACTERIURIA"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NIL", "FEW", "MODERATE", "MANY", "NEGATIVE"]
+        },
+        {
+          "parameterId": "YEAST",
+          "displayName": "Yeast",
+          "aliases": ["YEAST", "YEAST CELLS", "FUNGUS"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NIL", "PRESENT", "NEGATIVE"]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "templateId": "SEROLOGY_TYPHOID_v1.0",
+  "testType": "TYPHOID_TEST",
+  "displayName": "Typhoid Test",
+  "category": "SEROLOGY",
+  "version": "1.0",
+  "description": "Typhoid fever detection - Widal and antibody tests",
+  "sections": [
+    {
+      "sectionId": "WIDAL_TEST",
+      "sectionName": "Widal Test",
+      "description": "Antibody titer against Salmonella typhi",
+      "parameters": [
+        {
+          "parameterId": "TYPHI_O",
+          "displayName": "S. typhi O Antigen",
+          "aliases": ["TYPHI O", "S TYPHI O", "TO", "SALMONELLA TYPHI O"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NEGATIVE", "1:20", "1:40", "1:80", "1:160", "1:320"],
+          "referenceRange": {
+            "note": "Titer ≥1:80 considered significant"
+          }
+        },
+        {
+          "parameterId": "TYPHI_H",
+          "displayName": "S. typhi H Antigen",
+          "aliases": ["TYPHI H", "S TYPHI H", "TH", "SALMONELLA TYPHI H"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": true,
+          "expectedValues": ["NEGATIVE", "1:20", "1:40", "1:80", "1:160", "1:320"],
+          "referenceRange": {
+            "note": "Titer ≥1:160 considered significant"
+          }
+        },
+        {
+          "parameterId": "PARATYPHI_AH",
+          "displayName": "S. paratyphi AH Antigen",
+          "aliases": ["PARATYPHI AH", "S PARATYPHI AH", "AH", "SALMONELLA PARATYPHI AH"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NEGATIVE", "1:20", "1:40", "1:80", "1:160", "1:320"]
+        },
+        {
+          "parameterId": "PARATYPHI_BH",
+          "displayName": "S. paratyphi BH Antigen",
+          "aliases": ["PARATYPHI BH", "S PARATYPHI BH", "BH", "SALMONELLA PARATYPHI BH"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["NEGATIVE", "1:20", "1:40", "1:80", "1:160", "1:320"]
+          }
+      ]
+    },
+    {
+      "sectionId": "TYPHOID_ANTIBODIES",
+      "sectionName": "Typhoid Antibodies",
+      "description": "IgM/IgG antibody detection",
+      "parameters": [
+        {
+          "parameterId": "TYPHOID_IGM",
+          "displayName": "Typhoid IgM",
+          "aliases": ["TYPHOID IGM", "S TYPHI IGM", "TYPHOID FEVER IGM"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        },
+        {
+          "parameterId": "TYPHOID_IGG",
+          "displayName": "Typhoid IgG",
+          "aliases": ["TYPHOID IGG", "S TYPHI IGG", "TYPHOID FEVER IGG"],
+          "unit": "",
+          "decimalPlaces": 0,
+          "dataType": "text",
+          "required": false,
+          "expectedValues": ["REACTIVE", "NON-REACTIVE", "POSITIVE", "NEGATIVE"]
+        }
+      ]
+    }
+  ]
+}
