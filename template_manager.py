@@ -193,6 +193,48 @@ class TemplateManager:
                 if re.search(r'\b(HEPATITIS|HBSAG|ANTI.HCV)\b', ocr_text_upper):
                     score += 15
 
+            # Clinical Documents
+            elif test_type == "PRESCRIPTION":
+                if re.search(r'\b(PRESCRIPTION|RX|MEDICATION|DOSAGE|TABLET|CAPSULE)\b', ocr_text_upper):
+                    score += 20
+
+            elif test_type == "DISCHARGE_SUMMARY":
+                if re.search(r'\b(DISCHARGE|ADMISSION|HOSPITALIZATION)\b', ocr_text_upper):
+                    score += 20
+
+            elif test_type == "MEDICAL_CERTIFICATE":
+                if re.search(r'\b(MEDICAL CERTIFICATE|SICK LEAVE|FITNESS)\b', ocr_text_upper):
+                    score += 20
+
+            # Financial Documents
+            elif test_type == "HOSPITAL_BILL":
+                if re.search(r'\b(BILL|INVOICE|CHARGES|HOSPITAL)\b', ocr_text_upper):
+                    score += 15
+                if re.search(r'\b(CONSULTATION|PROCEDURE|ROOM CHARGES)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "PHARMACY_BILL":
+                if re.search(r'\b(PHARMACY|CHEMIST|MRP|BATCH|EXPIRY)\b', ocr_text_upper):
+                    score += 20
+
+            # Diagnostic Documents
+            elif test_type == "ECG_REPORT":
+                if re.search(r'\b(ECG|EKG|ELECTROCARDIOGRAM)\b', ocr_text_upper):
+                    score += 20
+
+            elif test_type == "XRAY_REPORT":
+                if re.search(r'\b(X.RAY|XRAY|RADIOGRAPH)\b', ocr_text_upper):
+                    score += 20
+
+            elif test_type == "ULTRASOUND_REPORT":
+                if re.search(r'\b(ULTRASOUND|USG|SONOGRAPHY)\b', ocr_text_upper):
+                    score += 20
+
+            # Administrative Documents
+            elif test_type == "VACCINATION_CERTIFICATE":
+                if re.search(r'\b(VACCINATION|VACCINE|IMMUNIZATION)\b', ocr_text_upper):
+                    score += 20
+
             # Update best match
             if score > max_score:
                 max_score = score
@@ -317,6 +359,73 @@ class TemplateManager:
             elif test_type == "HEPATITIS_PANEL":
                 if re.search(r'\b(HEPATITIS|HBSAG|ANTI.HCV|HBV|HCV|HAV)\b', ocr_text_upper):
                     score += 15
+
+            # Clinical Documents
+            elif test_type == "PRESCRIPTION":
+                if re.search(r'\b(PRESCRIPTION|RX|MEDICATION|DOSAGE|TABLET|CAPSULE|MEDICINE)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(DOCTOR|DR\.|PHYSICIAN|CONSULTANT|MBBS|MD)\b', ocr_text_upper):
+                    score += 5
+                if re.search(r'\b(FREQUENCY|DURATION|DAYS|TIMES DAILY|BD|TDS|OD)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "DISCHARGE_SUMMARY":
+                if re.search(r'\b(DISCHARGE|ADMISSION|HOSPITALIZATION|INPATIENT|IPD)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(ADMITTED|DISCHARGED|LENGTH OF STAY|FINAL DIAGNOSIS)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "MEDICAL_CERTIFICATE":
+                if re.search(r'\b(MEDICAL CERTIFICATE|SICK LEAVE|FITNESS CERTIFICATE|UNFIT|REST)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(LEAVE FROM|LEAVE TO|DAYS OF LEAVE)\b', ocr_text_upper):
+                    score += 5
+
+            # Financial Documents
+            elif test_type == "HOSPITAL_BILL":
+                if re.search(r'\b(BILL|INVOICE|RECEIPT|CHARGES|CONSULTATION FEE|PAYABLE)\b', ocr_text_upper):
+                    score += 15
+                if re.search(r'\b(HOSPITAL|CLINIC|MEDICAL CENTER|HEALTH)\b', ocr_text_upper):
+                    score += 5
+                if re.search(r'\b(SUBTOTAL|TAX|GST|TOTAL AMOUNT|NET AMOUNT)\b', ocr_text_upper):
+                    score += 5
+                # Distinguish from pharmacy bill
+                if re.search(r'\b(ROOM CHARGES|CONSULTATION|PROCEDURE|SURGERY|IPD|OPD)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "PHARMACY_BILL":
+                if re.search(r'\b(PHARMACY|CHEMIST|MEDICAL STORE|DRUGSTORE)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(MEDICINE|DRUG|TABLET|CAPSULE|SYRUP|MRP|BATCH)\b', ocr_text_upper):
+                    score += 5
+                if re.search(r'\b(EXPIRY|BATCH NO|DL NO|DRUG LICENSE)\b', ocr_text_upper):
+                    score += 5
+
+            # Diagnostic Documents
+            elif test_type == "ECG_REPORT":
+                if re.search(r'\b(ECG|EKG|ELECTROCARDIOGRAM|CARDIOGRAM)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(HEART RATE|RHYTHM|PR INTERVAL|QRS|QT INTERVAL)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "XRAY_REPORT":
+                if re.search(r'\b(X.RAY|XRAY|RADIOGRAPH|CHEST PA|CHEST X.RAY)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(FINDINGS|IMPRESSION|RADIOLOGIST|VIEW)\b', ocr_text_upper):
+                    score += 5
+
+            elif test_type == "ULTRASOUND_REPORT":
+                if re.search(r'\b(ULTRASOUND|USG|SONOGRAPHY|DOPPLER)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(ABDOMEN|PELVIS|KUB|OBSTETRIC|FINDINGS|IMPRESSION)\b', ocr_text_upper):
+                    score += 5
+
+            # Administrative Documents
+            elif test_type == "VACCINATION_CERTIFICATE":
+                if re.search(r'\b(VACCINATION|VACCINE|IMMUNIZATION|DOSE|COVAXIN|COVISHIELD)\b', ocr_text_upper):
+                    score += 20
+                if re.search(r'\b(1ST DOSE|2ND DOSE|BOOSTER|BATCH NUMBER)\b', ocr_text_upper):
+                    score += 5
 
             # Add to matches if above threshold
             if score >= threshold:
