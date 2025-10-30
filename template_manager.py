@@ -40,7 +40,7 @@ class TemplateManager:
 
                 template_id = template.get("templateId")
                 # Support both "testType" (lab reports) and "documentType" (clinical/financial)
-                test_type = template.get("testType") or template.get("documentType")
+                test_type = template.get("testType") or template.get("documentType") or template.get("documentType")
 
                 if template_id and test_type:
                     self.templates[template_id] = template
@@ -92,7 +92,7 @@ class TemplateManager:
 
         for template in self.templates.values():
             score = 0
-            test_type = template.get("testType")
+            test_type = template.get("testType") or template.get("documentType")
             display_name = template.get("displayName", "").upper()
             aliases = template.get("metadata", {}).get("commonAliases", [])
             department = template.get("department", "").upper()
@@ -259,7 +259,7 @@ class TemplateManager:
 
         for template in self.templates.values():
             score = 0
-            test_type = template.get("testType")
+            test_type = template.get("testType") or template.get("documentType")
             display_name = template.get("displayName", "").upper()
             aliases = template.get("metadata", {}).get("commonAliases", [])
             department = template.get("department", "").upper()
@@ -454,7 +454,7 @@ class TemplateManager:
         # Build template options for LLM
         template_options = []
         for template_id, template in self.templates.items():
-            test_type = template.get("testType")
+            test_type = template.get("testType") or template.get("documentType")
             display_name = template.get("displayName")
             department = template.get("department")
 
